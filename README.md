@@ -6,13 +6,13 @@
 
 
 ## Sentiment Analysis specific paper: 
-Sentiment analysis using BERT (pre-training language representations):
+* Sentiment analysis using BERT (pre-training language representations):
 https://iust-deep-learning.github.io/972/static_files/project_reports/sent.pdf
 
 * Bert Trained for Twitter Sentiment analysis:
 https://github.com/XiaoQQin/BERT-fine-tuning-for-twitter-sentiment-analysis
 
-Really amazing accomplishments towards Sentiment Analysis:(Article, Github)
+* Really amazing accomplishments towards Sentiment Analysis:(Article, Github)
 https://paperswithcode.com/task/sentiment-analysis
 
 ## Twitter specific methods
