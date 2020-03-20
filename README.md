@@ -9,6 +9,9 @@
 * Sentiment analysis using BERT (pre-training language representations):
 https://iust-deep-learning.github.io/972/static_files/project_reports/sent.pdf
 
+* How to Fine-Tune BERT for Text Classification
+https://arxiv.org/pdf/1905.05583.pdf
+
 * Bert Trained for Twitter Sentiment analysis:
 https://github.com/XiaoQQin/BERT-fine-tuning-for-twitter-sentiment-analysis
 
