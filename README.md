@@ -4,6 +4,17 @@
 * SOTA for many DS: https://arxiv.org/pdf/1906.08237.pdf
 * SOTAs evaluated on different DS: https://www.aclweb.org/anthology/W17-5202.pdf
 
+
+## Sentiment Analysis specific paper: 
+Sentiment analysis using BERT (pre-training language representations):
+https://iust-deep-learning.github.io/972/static_files/project_reports/sent.pdf
+
+* Bert Trained for Twitter Sentiment analysis:
+https://github.com/XiaoQQin/BERT-fine-tuning-for-twitter-sentiment-analysis
+
+Really amazing accomplishments towards Sentiment Analysis:(Article, Github)
+https://paperswithcode.com/task/sentiment-analysis
+
 ## Twitter specific methods
 * Lexicon based sentiment analysis for social networks: https://www.researchgate.net/publication/283318830_Lexicon-Based_Sentiment_Analysis_in_the_Social_Web?ev=prf_pub
 * Lexicon based for twitter: https://www.researchgate.net/publication/270794878_Sentiment_Analysis_Twitter_dengan_Kombinasi_Lexicon_Based_dan_Double_Propagation
