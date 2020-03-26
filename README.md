@@ -4,13 +4,15 @@
 * SOTA for many DS: https://arxiv.org/pdf/1906.08237.pdf
 * SOTAs evaluated on different DS: https://www.aclweb.org/anthology/W17-5202.pdf
 
-
 ## Sentiment Analysis specific paper: 
 * Sentiment analysis using BERT (pre-training language representations):
 https://iust-deep-learning.github.io/972/static_files/project_reports/sent.pdf
 
-* How to Fine-Tune BERT for Text Classification
-https://arxiv.org/pdf/1905.05583.pdf
+* BERT:
+ - How to Fine-Tune BERT for Text Classification
+   https://arxiv.org/pdf/1905.05583.pdf
+ - BERT as YouTube video:
+   https://www.youtube.com/watch?v=OR0wfP2FD3c
 
 * Bert Trained for Twitter Sentiment analysis:
 https://github.com/XiaoQQin/BERT-fine-tuning-for-twitter-sentiment-analysis
@@ -31,10 +33,16 @@ https://paperswithcode.com/task/sentiment-analysis
 
 ## "Creative" things
 Things where we can bring in own ideas.
+
+### Preprocessing
 * Break up hash tags
 * Score smileys. e.g. :D :p . We could use this: https://en.wikipedia.org/wiki/List_of_emoticons and e.g. just replace them by the wikipedia word.
 * Combine lexicon based with classic ML. E.g. get rotten tomato score for movie titles
 * Twitter specific things: Correct misspelled words, deal with slang words/grammar somehow (I don't know if standard stemmers can stem them for example)
+
+### Pretraining
+* BERT NSP: Predict if part of same tweet instead of predict if subsequent sentence
+
 
 ## Similar data sets
 * List of sentiment data sets: https://blog.cambridgespark.com/50-free-machine-learning-datasets-sentiment-analysis-b9388f79c124
