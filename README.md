@@ -5,18 +5,15 @@
 * SOTAs evaluated on different DS: https://www.aclweb.org/anthology/W17-5202.pdf
 
 ## Sentiment Analysis specific paper: 
-* Sentiment analysis using BERT (pre-training language representations):
-https://iust-deep-learning.github.io/972/static_files/project_reports/sent.pdf
-
 * BERT:
- - How to Fine-Tune BERT for Text Classification
-   https://arxiv.org/pdf/1905.05583.pdf
- - BERT as YouTube video:
-   https://www.youtube.com/watch?v=OR0wfP2FD3c
-
-* Bert Trained for Twitter Sentiment analysis:
-https://github.com/XiaoQQin/BERT-fine-tuning-for-twitter-sentiment-analysis
-
+    * How to Fine-Tune BERT for Text Classification
+      https://arxiv.org/pdf/1905.05583.pdf
+    * BERT as YouTube video:
+      https://www.youtube.com/watch?v=OR0wfP2FD3c
+    * Bert Trained for Twitter Sentiment analysis:
+      https://github.com/XiaoQQin/BERT-fine-tuning-for-twitter-sentiment-analysis
+    * Sentiment analysis using BERT (pre-training language representations):
+      https://iust-deep-learning.github.io/972/static_files/project_reports/sent.pdf
 * Really amazing accomplishments towards Sentiment Analysis:(Article, Github)
 https://paperswithcode.com/task/sentiment-analysis
 
@@ -41,7 +38,7 @@ Things where we can bring in own ideas.
 * Twitter specific things: Correct misspelled words, deal with slang words/grammar somehow (I don't know if standard stemmers can stem them for example)
 
 ### Pretraining
-* BERT NSP: Predict if part of same tweet instead of predict if subsequent sentence
+* BERT NSP: Predict if part of same tweet instead of predict if subsequent sentence. I'm actually not sure if we should do that at all because I think it especially benefits Q&A prediction. But could do pretraining on other twitter data like that.
 
 
 ## Similar data sets
