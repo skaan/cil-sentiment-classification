@@ -44,3 +44,4 @@ Things where we can bring in own ideas.
 ## Similar data sets
 * List of sentiment data sets: https://blog.cambridgespark.com/50-free-machine-learning-datasets-sentiment-analysis-b9388f79c124
 * Polarity (negative 0 - positve 1) of words/smileys/hashtags used on twitter: http://alt.qcri.org/semeval2015/task10/data/uploads/semeval2015-task10-subtaske-testdata-gold.txt
+* https://www.trackmyhashtag.com/twitter-dataset
