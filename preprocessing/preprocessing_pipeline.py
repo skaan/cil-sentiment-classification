@@ -1,6 +1,6 @@
 from hashtag_split import HashtagSplit
-from spelling_corrector import SpellingCorrection
-from smiley_replace import SmileyReplace
+from spelling_correction import SpellingCorrection
+from emoticon_replace import EmoticonReplace
 
 
 # data paths
@@ -14,8 +14,8 @@ path_3 = "path/to/fully/preprocessed/data"
 hs = HashtagSplit()
 hs.set_paths(path_0, path_1)
 
-sr = SmileyReplace()
-sr.set_paths(path_1, path_2)
+er = EmoticonReplace()
+er.set_paths(path_1, path_2)
 
 sc = SpellingCorrection()
 sc.set_paths(path_2, path_3)
@@ -23,5 +23,5 @@ sc.set_paths(path_2, path_3)
 
 # run pipeline
 hs.run()
-sr.run()
+er.run()
 sc.run()
