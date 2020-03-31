@@ -9,23 +9,23 @@
 :^),smiley
 =],smiley
 =),smiley
-:‑d,"laughing,"
-8‑d,"laughing,"
-x‑d,"laughing,"
-x‑d,"laughing,"
-=d,"laughing,"
-=3,"laughing,"
-b^d,"laughing,"
-:-)),very happy or double chin
+:‑d,laughing
+8‑d,laughing
+x‑d,laughing
+x‑d,laughing
+=d,laughing
+=3,laughing
+b^d,laughing
+:-)),very happy
 :‑(,frown
 :‑c,frown
-:‑< ,frown
+:‑<,frown
 :‑[,frown
 :-||,frown
- >:[,frown
+>:[,frown
 :{,frown
 :@,frown
- >:(,frown
+>:(,frown
 ;(,frown
 :'‑(,crying
 :'‑),tears of happiness
@@ -40,7 +40,7 @@ dx,horror
 :‑o,surprise
 :-0,surprise
 8‑0,surprise
- >:o,surprise
+>:o,surprise
 :-*,kiss
 :×,kiss
 ;‑),wink
@@ -49,16 +49,16 @@ dx,horror
 ;^),wink
 ":‑,",wink
 ;d,wink
-:‑p,"tongue sticking out, cheeky/playful,"
-x‑p,"tongue sticking out, cheeky/playful,"
-x‑p,"tongue sticking out, cheeky/playful,"
-:‑p,"tongue sticking out, cheeky/playful,"
-:‑þ,"tongue sticking out, cheeky/playful,"
-:‑þ,"tongue sticking out, cheeky/playful,"
-:‑b,"tongue sticking out, cheeky/playful,"
-d:,"tongue sticking out, cheeky/playful,"
-=p,"tongue sticking out, cheeky/playful,"
->:p,"tongue sticking out, cheeky/playful,"
+:‑p,tongue sticking out
+x‑p,tongue sticking out
+x‑p,tongue sticking out
+:‑p,tongue sticking out
+:‑þ,tongue sticking out
+:‑þ,tongue sticking out
+:‑b,tongue sticking out
+d:,tongue sticking out
+=p,tongue sticking out
+>:p,tongue sticking out
 :‑/,skeptical
 :‑.,skeptical
 >:\,skeptical
@@ -70,30 +70,33 @@ d:,"tongue sticking out, cheeky/playful,"
 =l,skeptical
 :s,skeptical
 :‑|,straight face
-:$,"embarrassed,"
-://),"embarrassed,"
-:‑x,"sealed lips or wearing braces,"
-:‑#,"sealed lips or wearing braces,"
-:‑&,"sealed lips or wearing braces,"
-o:‑),"angel,"
-0:‑3,"angel,"
-0:‑),"angel,"
-0;^),"angel,"
->:‑),"evil,"
-}:‑),"evil,"
-3:‑),"evil,"
- >;),"evil,"
->:3,"evil,"
-|;‑),"cool,"
-|‑o,"cool,"
+:$,embarrassed
+://),embarrassed
+:‑x,sealed lips
+:‑#,sealed lips
+:‑&,sealed lips
+o:‑),angel
+0:‑3,angel
+0:‑),angel
+0;^),angel
+>:‑),evil
+}:‑),evil
+3:‑),evil
+>;),evil
+>:3,evil
+|;‑),cool
+|‑o,cool
 :‑j,tongue-in-cheek
 #‑),partied all night
-%‑),"drunk,"
-:‑###..,being sick
-<:‑|,"dumb, dunce-like"
-"',:-|","scepticism, disbelief, or disapproval"
-"',:-l","scepticism, disbelief, or disapproval"
-@};- @}->-- @}‑;‑'‑‑‑ @>‑‑>‑‑,rose
+%‑),drunk
+:‑###,being sick
+<:‑|,dumb
+"',:-|",scepticism
+"',:-l",scepticism
+@};-,rose
+@}->--,rose
+@}‑;‑'‑‑‑,rose
+@>‑‑>‑‑,rose
 5:‑),elvis presley
 ~:‑\,elvis presley
 *<|:‑),santa claus
@@ -104,28 +107,27 @@ o:‑),"angel,"
 </3,broken-heart
 <\3,broken-heart
 <3,heart
-><>,"fish, something's fishy,"
-<*)))‑{,"fish, something's fishy,"
-o_o,"surprise,"
-o‑o,"surprise,"
-o_o,"surprise,"
-o_o,"surprise,"
-o_o,"surprise,"
+><>,fish
+<*)))‑{,fish
+o_o,surprise
+o‑o,surprise
+o_o,surprise
+o_o,surprise
+o_o,surprise
 ^5,high five
 o/\o,high five
 (>_<),troubled
 (';'),baby
-(^^ゞ,"nervous, embarrassed,"
+(^^ゞ,nervous
 (^.^)y-.o○,smoking
 (-_-)zzz,sleeping
 (^_-),wink
 ((+_+)),confused
 (o|o),ultraman
-<(｀^´)>,n/a
 ^_^,joyful
 (__),kowtow
 ＼(°ロ＼),questioning
-('_'),"sad, crying"
+('_'),sad
 (ー_ー)!!,shame
 (=_=),tired
 (=^・^=),cat
@@ -138,37 +140,100 @@ o/\o,high five
 (v)o￥o(v),alien baltan
 ＼(~o~)／,excited
 (*_*),amazed
-!(^^)!,n/a
-(*^^)v,"laughing, cheerful"
-(~o~),n/a
-(^^ゞ,n/a
-(p_-),n/a
-((d[-_-]b)),"headphones, listening to music"
+(*^^)v,laughing
+((d[-_-]b)),headphones
 "(-""-)",worried
 (^0_0^),eyeglasses
-( ..)φ,jotting note
+(,jotting note
+..)φ,jotting note
 (●＾o＾●),happy
 (￣ー￣),grinning
 (￣□￣;),surprised
 (*´▽｀*),infatuation
-（ ﾟ дﾟ),"shocked, surprised"
+（,shocked
+ﾟ,shocked
+дﾟ),shocked
 (*￣m￣),dissatisfied
-ヽ(´ー｀)┌,"mellow, shrug"
-(´･ω･`),snubbed or deflated
+ヽ(´ー｀)┌,mellow
+(´･ω･`),snubbed
 (*^3^)/~☆,blowing a kiss
 .....φ(・∀・＊),studying is good
 uwu,joy
-owo,"cute, inquisitive or perplexed, sometimes associated with the "
+owo,cute
 .o○,bubbles
-( ^^),cup of tea
 ☆彡,shooting star
 >°)))彡,fish
-<コ:彡  ｃ:.ミ,"octopus, squid"
+<コ:彡,octopus
+ｃ:.ミ,octopus
 ~>°)～～～,snake
 ～°·_·°～,bat
 (°°)～,tadpole
 ●～*,bomb
-￣|○,"despair. the ""o""s represent head on the ground, ""t"" or ""r"" forms the torso, and ""s"" or ""z"" the legs."
-(╯°□°）╯︵ ┻━┻,table flip
-:3ミ,n/a
+￣|○,despair
+(╯°□°）╯︵,table flip
+┻━┻,table flip
+:),smiley
+:],smiley
+:3,smiley
+:>,smiley
+8),smiley
+:},smiley
 :d,laughing
+8d,laughing
+xd,laughing
+xd,laughing
+:)),very happy
+:(,frown
+:c,frown
+:<,frown
+:[,frown
+:||,frown
+:'(,crying
+:'),tears of happiness
+d':,horror
+:o,surprise
+:o,surprise
+:0,surprise
+80,surprise
+:*,kiss
+;),wink
+*),wink
+;],wink
+":,",wink
+:p,tongue sticking out
+xp,tongue sticking out
+xp,tongue sticking out
+:p,tongue sticking out
+:þ,tongue sticking out
+:þ,tongue sticking out
+:b,tongue sticking out
+:/,skeptical
+:.,skeptical
+:|,straight face
+:x,sealed lips
+:#,sealed lips
+:&,sealed lips
+o:),angel
+0:3,angel
+0:),angel
+>:),evil
+}:),evil
+3:),evil
+|;),cool
+|o,cool
+:j,tongue-in-cheek
+#),partied all night
+%),drunk
+:###,being sick
+<:|,dumb
+"',:|",scepticism
+"',:l",scepticism
+@};,rose
+5:),elvis presley
+~:\,elvis presley
+*<|:),santa claus
+",:)",ronald reagan
+<*))){,fish
+oo,surprise
+(^.^)y.o○,smoking
+(^_),wink

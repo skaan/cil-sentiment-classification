@@ -24,26 +24,50 @@ class EmoticonReplace(PreprocessingInterface):
 
         for table in tables:
             # remove all links
-            for ab in table.findAll('a'):
-                ab.replaceWithChildren()
+            for s in table.findAll('a'):
+                s.replaceWithChildren()
             for s in table.findAll('sup', class_=True):
                 s.extract()
 
             # add emoticons and description
+            ignore = ['n/a', 'shocked', 'cup of tea']
+
             for row in table.findAll('tr'):
                 cells = row.findAll('td')
                 if len(cells) >= 3:
                     for i in range(len(cells)-2):
-                        # Innerhalb einer zelle noch mit span
-                        # Innerhalb von span mit abstand
-                        emoticon_string = cells[i].find(text=True).replace('\n', '')
-                        if len(emoticon_string) != 0:
-                            emoticon.append(emoticon_string.lower())
-                            description.append(cells[-1].find(text=True).lower())
+                        emoticon_string = cells[i].find(text=True).replace('\n', '').lower()
+                        description_string = cells[-1].find(text=True).replace('\n', '').lower()
 
-        # TODO clean
-        emoticon.append(':d')
-        description.append('smile')
+                        if description_string not in ignore:
+                            single_emoticons = emoticon_string.split(' ')
+                            for e in single_emoticons:
+                                if len(e) != 0:
+                                    emoticon.append(e)
+                                    description.append(description_string)
+
+        # clean
+        for i in range(len(description)):
+            # remove everything after ",", " or ", ". "
+            description[i] = description[i].split(",", 1)[0]
+            description[i] = description[i].split(" or ", 1)[0]
+            description[i] = description[i].split(". ", 1)[0]
+
+            # handle .. (some emoticons contain .. indicating symbol is repeated)
+            if emoticon[i].endswith('..'):
+                emoticon[i] = emoticon[i][:-2]
+
+            # add nose-less version of all emoticons: :-) -> :)
+            no_nose = emoticon[i].split("‑")
+            if len(no_nose) == 2:
+                emoticon.append(no_nose[0] + no_nose[1])
+                description.append(description[i])
+            else:
+                # Wikipedia used to different - for the noses
+                no_nose = emoticon[i].split("-")
+                if len(no_nose) == 2:
+                    emoticon.append(no_nose[0] + no_nose[1])
+                    description.append(description[i])
 
         # print
         for i in range(len(emoticon)):
@@ -67,7 +91,8 @@ class EmoticonReplace(PreprocessingInterface):
         # get emoticon dict
         with open(dict_path, mode='r') as f:
             reader = csv.reader(f)
-            dict = {rows[0]:rows[1] for rows in reader}
+            for rows in reader:
+                print(rows[0] + ", " + rows[1])
 
         # replace emoticons in input file
         output = open(self.output, 'w+')
