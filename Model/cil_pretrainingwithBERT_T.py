@@ -7,8 +7,17 @@ import pandas as pd
 import re
 import os
 import bert
-import tqdm
+from  tqdm import tqdm
 from bert.tokenization.bert_tokenization import FullTokenizer
+import nltk.data
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import string
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('stopwords')
 
 #%%
 
@@ -98,8 +107,33 @@ def create_input_array(sentences):
 
 #%%
 
-train_sentences = Train_df[5].values
+
+def clean_tweets(tweet):
+    stop_words = set(stopwords.words('english'))
+    #after tweet preprocessing the colon symbol left remain after #removing mentions
+    tweet = re.sub(r'‚Ä¶', '', tweet)
+    #after tweet 
+    tweet = re.sub(r'@([^\s]+)', '', tweet)
+    #replace the https
+    tweet = re.sub(r'http[s]?[:]?[\s]?\/\/(?:[a-z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-f][0-9a-f]))+','',tweet)
+
+    word_tokens = word_tokenize(tweet)
+    #filter using NLTK library append it to a string
+    filtered_tweet = [w for w in word_tokens if not w in stop_words]
+    filtered_tweet = []
+    #looping through conditions
+    for w in word_tokens:
+    #check tokens against stop words and punctuations
+        if w not in string.punctuation:
+            filtered_tweet.append(w)
+    return ' '.join(filtered_tweet)
+
+
+#%%
+train_sentences = [clean_tweets(x) for x in Train_df.ix[:,5].values]
 train_y = Train_df[0].values
+
+#%%
 
 x = tf.keras.layers.GlobalAveragePooling1D()(sequence_output)
 x = tf.keras.layers.Dropout(0.2)(x)
@@ -114,3 +148,13 @@ inputs=create_input_array(train_sentences)
 model.fit(inputs,train_y,epochs=1,batch_size=32,validation_split=0.2,shuffle=True)
 
 #%%
+
+test_df=pd.read_csv(r'C:/Users/potta/Documents/CIL/testdata.manual.2009.06.14.csv',sep=',',encoding='ISO-8859-1',header = None)
+ 
+test_sentences = [clean_tweets(x) for x in test_df.ix[:,5].values]
+ 
+test_inputs=create_input_array(test_sentences)
+ 
+test_predicted = model.predict(test_inputs)
+
+# %%
