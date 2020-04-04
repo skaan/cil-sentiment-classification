@@ -79,6 +79,16 @@ class EmoticonReplace(PreprocessingInterface):
             w.writerow([emoticon[i], description[i]])
 
 
+    def print_dict(self):
+        if not os.path.isfile(dict_path):
+            print('scraping ...')
+            self.get_replace_words()
+        else:
+            with open(dict_path, mode='r') as f:
+                reader = csv.reader(f)
+                for rows in reader:
+                    print(rows[0] + ", " + rows[1])
+
 
     def run(self):
         super().run();
@@ -91,8 +101,7 @@ class EmoticonReplace(PreprocessingInterface):
         # get emoticon dict
         with open(dict_path, mode='r') as f:
             reader = csv.reader(f)
-            for rows in reader:
-                print(rows[0] + ", " + rows[1])
+            dict = {rows[0]:rows[1] for rows in reader}
 
         # replace emoticons in input file
         output = open(self.output, 'w+')
