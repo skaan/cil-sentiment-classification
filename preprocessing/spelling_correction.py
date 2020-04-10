@@ -22,7 +22,3 @@ class SpellingCorrection(PreprocessingInterface):
                     output.write('\n')
 
         output.close()
-
-sc = SpellingCorrection()
-sc.set_paths("../data/part_train_pos.txt", "corr.txt")
-sc.run()
