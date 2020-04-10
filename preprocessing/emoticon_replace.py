@@ -119,6 +119,4 @@ class EmoticonReplace(PreprocessingInterface):
 
                     output.write('\n')
 
-
-er = EmoticonReplace()
-er.print_dict()
+        output.close()
