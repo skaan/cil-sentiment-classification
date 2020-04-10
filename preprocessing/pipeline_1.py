@@ -8,6 +8,8 @@ Pipeline:
 6. Wordnet lemmatize
 '''
 
+import os
+
 from hashtag_split_ww import HashtagSplitWW
 from emoticon_replace import EmoticonReplace
 from appos_remove import ApposRemove
@@ -25,17 +27,18 @@ sr = StopwordsRemove()
 wl = WordNetLemma()
 
 # execute pipeline
+file_path = os.path.dirname(__file__)
 data = 'pos'
 
 for i in range(2):
 
     # data paths
-    path_0 = "../data/part_train_" + data + ".txt"
-    path_1 = "../data/train_" + data + "_full_1.txt"
-    path_2 = "../data/train_" + data + "_full_2.txt"
-    path_3 = "../data/train_" + data + "_full_3.txt"
-    path_4 = "../data/train_" + data + "_full_4.txt"
-    path_5 = "../data/train_" + data + "_full_prep.txt"
+    path_0 = os.path.join(file_path, "../data/part_train_" + data + ".txt")
+    path_1 = os.path.join(file_path, "../data/train_" + data + "_full_1.txt")
+    path_2 = os.path.join(file_path, "../data/train_" + data + "_full_2.txt")
+    path_3 = os.path.join(file_path, "../data/train_" + data + "_full_3.txt")
+    path_4 = os.path.join(file_path, "../data/train_" + data + "_full_4.txt")
+    path_5 = os.path.join(file_path, "../data/train_" + data + "_full_prep.txt")
 
     # set paths
     hs.set_paths(path_0, path_1)

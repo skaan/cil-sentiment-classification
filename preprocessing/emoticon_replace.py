@@ -5,9 +5,12 @@ from bs4 import BeautifulSoup
 import csv
 import os
 
-dict_path = 'emoticon_dict.csv'
 
 class EmoticonReplace(PreprocessingInterface):
+
+    def __init__(self, dict_path='emoticon_dict.json'):
+        file_path = os.path.dirname(__file__)
+        self.dict_path =  os.path.join(file_path, dict_path)
 
     def get_replace_words(self):
         # get wikipedia tables
@@ -78,17 +81,17 @@ class EmoticonReplace(PreprocessingInterface):
             print(emoticon[i] + " " + description[i])
 
         # save
-        w = csv.writer(open(dict_path, 'w'))
+        w = csv.writer(open(self.dict_path, 'w'))
         for i in range(len(emoticon)):
             w.writerow([emoticon[i], description[i]])
 
 
     def print_dict(self):
-        if not os.path.isfile(dict_path):
+        if not os.path.isfile(self.dict_path):
             print('scraping ...')
             self.get_replace_words()
         else:
-            with open(dict_path, mode='r') as f:
+            with open(self.dict_path, mode='r') as f:
                 reader = csv.reader(f)
                 for rows in reader:
                     print(rows[0] + ", " + rows[1])
@@ -97,14 +100,14 @@ class EmoticonReplace(PreprocessingInterface):
         print("Performance EmoticonReplace")
 
         # get dict size
-        if not os.path.isfile(dict_path):
+        if not os.path.isfile(self.dict_path):
             print('scraping ...')
-            self.get_replace_words() # TODO: You need to return dict
-        else:
-            with open(dict_path, mode='r', encoding='utf8') as f:
-                reader = csv.reader(f)
-                for rows in reader:
-                    dict = {rows[0]:rows[1] for rows in reader}
+            self.get_replace_words()
+
+        with open(self.dict_path, mode='r', encoding='utf8') as f:
+            reader = csv.reader(f)
+            for rows in reader:
+                dict = {rows[0]:rows[1] for rows in reader}
 
         print("  Dict size: " + str(len(dict)))
 
@@ -151,12 +154,12 @@ class EmoticonReplace(PreprocessingInterface):
         super().run();
 
         # scrape emoticon dict if not already done
-        if not os.path.isfile(dict_path):
+        if not os.path.isfile(self.dict_path):
             print('scraping ...')
-            self.get_replace_words() # TODO: You need to return dict
+            self.get_replace_words()
 
         # get emoticon dict
-        with open(dict_path, mode='r', encoding='utf8') as f:
+        with open(self.dict_path, mode='r', encoding='utf8') as f:
             reader = csv.reader(f)
             dict = {rows[0]:rows[1] for rows in reader}
 
