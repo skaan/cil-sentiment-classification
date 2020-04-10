@@ -18,3 +18,5 @@ class PorterStem(PreprocessingInterface):
                         output.write(stemmer.stem(word) + ' ')
 
                     output.write('\n')
+
+        output.close()

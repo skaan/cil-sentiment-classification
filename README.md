@@ -1,3 +1,9 @@
+# Prerequisits
+'''
+pip install wordsegment==1.3.1
+pip install pyspellchecker
+'''
+
 # Resources
 ## State of the art (general)
 * List SOTAs for open source DS: http://nlpprogress.com/english/sentiment_analysis.html

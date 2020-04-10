@@ -56,6 +56,10 @@ class EmoticonReplace(PreprocessingInterface):
             # handle .. (some emoticons contain .. indicating symbol is repeated)
             if emoticon[i].endswith('..'):
                 emoticon[i] = emoticon[i][:-2]
+                emoticon.append(emoticon[i] + emoticon[i][-1]) # append with last sign once more
+                description.append(description[i])
+                emoticon.append(emoticon[-1] + emoticon[-1][-1]) # append with last sign twice more
+                description.append(description[i])
 
             # add nose-less version of all emoticons: :-) -> :)
             no_nose = emoticon[i].split("‑")
@@ -114,3 +118,7 @@ class EmoticonReplace(PreprocessingInterface):
                             output.write(word + ' ')
 
                     output.write('\n')
+
+
+er = EmoticonReplace()
+er.print_dict()

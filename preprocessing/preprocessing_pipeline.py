@@ -1,4 +1,4 @@
-from hashtag_split import HashtagSplit
+from hashtag_split_ww import HashtagSplitWW
 from spelling_correction import SpellingCorrection
 from emoticon_replace import EmoticonReplace
 from porter_stem import PorterStem
@@ -11,7 +11,7 @@ path_3 = "path/to/fully/preprocessed/data"
 
 
 # init steps
-hs = HashtagSplit()
+hs = HashtagSplitWW()
 hs.set_paths(path_0, path_1)
 
 er = EmoticonReplace()
