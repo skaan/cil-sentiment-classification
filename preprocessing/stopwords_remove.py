@@ -15,6 +15,8 @@ class StopwordsRemove(PreprocessingInterface):
             nltk.download('stopwords')
 
         stop_words = set(stopwords.words('english'))
+        stop_words.add('<user>')
+        stop_words.add('<url')
 
         # remove
         output = open(self.output, 'w+')
