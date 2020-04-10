@@ -8,7 +8,8 @@ pip install pyspellchecker
 
 Get full data:
 ```
-Go to Kaggle and copy train_pos_full.txt, train_neg_full.txt to data folder.
+Download data zip from https://www.kaggle.com/c/cil-text-classification-2020/data.
+Move train_pos_full.txt and train_neg_full.txt into data folder
 ```
 
 # Resources
