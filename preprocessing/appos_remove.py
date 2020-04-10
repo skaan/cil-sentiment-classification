@@ -109,6 +109,46 @@ class ApposRemove(PreprocessingInterface):
         print(self.dict)
 
 
+    def get_performance(self):
+        # replace appos in input file
+        print("Performance ApposRemove")
+
+        # get dict size
+        print("  Dict size: " + str(len(self.dict)))
+
+        # process files
+        from collections import defaultdict
+
+        missed = defaultdict(int)
+        replaced = 0
+        not_rec = 0
+
+        output = open(self.output, 'w+')
+        with open(self.input, mode='r') as input:
+            for line in input:
+                for word in line.split():
+                    if word in self.dict:
+                        replaced += 1
+                        output.write(self.dict[word] + ' ')
+                    elif word.find('\'') != -1:
+                        # appos word that's not in dict
+                        missed[word] += 1
+                        not_rec += 1
+                        output.write(word + ' ')
+                    else:
+                        output.write(word + ' ')
+
+                output.write('\n')
+
+        output.close()
+
+        print("  replaced: " + str(replaced))
+        print("  not recognized: " + str(not_rec) + " (distinct: " + str(len(missed)) + ")")
+        print()
+        print("Appos not recognized:")
+        print(missed)
+
+
     def run(self):
         super().run();
 
@@ -129,3 +169,5 @@ class ApposRemove(PreprocessingInterface):
                         '''
 
                     output.write('\n')
+
+        output.close()

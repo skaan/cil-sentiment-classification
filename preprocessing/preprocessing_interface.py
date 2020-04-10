@@ -7,6 +7,11 @@ class PreprocessingInterface:
         self.input = input
         self.output = output
 
+    def get_performance(self):
+        """print performance of step"""
+
+        pass
+
     def run(self):
         """run preprocessing step"""
 

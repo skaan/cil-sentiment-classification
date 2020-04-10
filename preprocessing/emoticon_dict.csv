@@ -7,14 +7,14 @@
 :o),smiley
 :c),smiley
 :^),smiley
-=],smiley
-=),smiley
+Err:507,smiley
+Err:508,smiley
 :‑d,laughing
 8‑d,laughing
 x‑d,laughing
 x‑d,laughing
-=d,laughing
-=3,laughing
+#NAME?,laughing
+3,laughing
 b^d,laughing
 :-)),very happy
 :‑(,frown
@@ -57,17 +57,17 @@ x‑p,tongue sticking out
 :‑þ,tongue sticking out
 :‑b,tongue sticking out
 d:,tongue sticking out
-=p,tongue sticking out
+#NAME?,tongue sticking out
 >:p,tongue sticking out
 :‑/,skeptical
 :‑.,skeptical
 >:\,skeptical
 >:/,skeptical
 :\,skeptical
-=/,skeptical
-=\,skeptical
+Err:510,skeptical
+#NAME?,skeptical
 :l,skeptical
-=l,skeptical
+#NAME?,skeptical
 :s,skeptical
 :‑|,straight face
 :$,embarrassed
@@ -101,7 +101,7 @@ o:‑),angel
 ~:‑\,elvis presley
 *<|:‑),santa claus
 ~(_8^(i),homer simpson
-=:o],bill clinton
+Err:507,bill clinton
 7:^],ronald reagan
 ",:‑)",ronald reagan
 </3,broken-heart
@@ -144,7 +144,6 @@ o/\o,high five
 ((d[-_-]b)),headphones
 "(-""-)",worried
 (^0_0^),eyeglasses
-(,jotting note
 ..)φ,jotting note
 (●＾o＾●),happy
 (￣ー￣),grinning

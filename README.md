@@ -6,6 +6,10 @@ pip install wordsegment
 pip install pyspellchecker
 ```
 
+Get full data:
+```
+Go to Kaggle and copy train_pos_full.txt, train_neg_full.txt to data folder.
+```
 
 # Resources
 ## State of the art (general)
