@@ -1,8 +1,9 @@
 # Prerequisits
-'''
-pip install wordsegment==1.3.1
+```
+pip install wordsegment
 pip install pyspellchecker
-'''
+```
+
 
 # Resources
 ## State of the art (general)
