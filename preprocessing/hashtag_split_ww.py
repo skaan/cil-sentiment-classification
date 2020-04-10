@@ -17,10 +17,7 @@ class HashtagSplitWW(PreprocessingInterface):
             for line in input:
                 for word in line.split():
                     if word[0] == '#':
-
-                        print(word)
                         split = segment(word[1:])
-                        print(split)
 
                         for split_word in split:
                             output.write(split_word + ' ')

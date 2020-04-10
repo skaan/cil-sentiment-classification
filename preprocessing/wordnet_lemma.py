@@ -25,8 +25,3 @@ class WordNetLemma(PreprocessingInterface):
                     output.write('\n')
 
         output.close()
-
-
-wl = WordNetLemma()
-wl.set_paths("../data/part_train_pos.txt", "lemma.txt")
-wl.run()

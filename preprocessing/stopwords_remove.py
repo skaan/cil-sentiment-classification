@@ -19,7 +19,7 @@ class StopwordsRemove(PreprocessingInterface):
         stop_words.add('<url')
 
         # remove
-        output = open(self.output, 'w+')
+        output = open(self.output, 'w+', encoding="utf8")
         with open(self.input, mode='r') as input:
                 for line in input:
                     for word in line.split():

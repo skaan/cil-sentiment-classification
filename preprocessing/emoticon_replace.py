@@ -101,7 +101,7 @@ class EmoticonReplace(PreprocessingInterface):
             print('scraping ...')
             self.get_replace_words() # TODO: You need to return dict
         else:
-            with open(dict_path, mode='r') as f:
+            with open(dict_path, mode='r', encoding='utf8') as f:
                 reader = csv.reader(f)
                 for rows in reader:
                     dict = {rows[0]:rows[1] for rows in reader}
@@ -156,7 +156,7 @@ class EmoticonReplace(PreprocessingInterface):
             self.get_replace_words() # TODO: You need to return dict
 
         # get emoticon dict
-        with open(dict_path, mode='r') as f:
+        with open(dict_path, mode='r', encoding='utf8') as f:
             reader = csv.reader(f)
             dict = {rows[0]:rows[1] for rows in reader}
 
