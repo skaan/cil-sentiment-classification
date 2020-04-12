@@ -18,42 +18,47 @@ from stopwords_remove import StopwordsRemove
 from wordnet_lemma import WordNetLemma
 
 
-# Init steps
-hs = HashtagSplitWW()
-er = EmoticonReplace()
-ar = ApposRemove()
-#sc = SpellingCorrection()
-sr = StopwordsRemove()
-wl = WordNetLemma()
+class Pipeline1:
 
-# execute pipeline
-file_path = os.path.dirname(__file__)
-data = 'pos'
+    '''
+    Give an array of input and output paths.
+    The two array must have same length, every input file will be
+    processed by pipeline and fully processed file will be written to
+    output_path at same array index.
+    '''
+    def process(self, input_paths, output_paths):
+        # Init steps
+        hs = HashtagSplitWW()
+        er = EmoticonReplace()
+        ar = ApposRemove()
+        #sc = SpellingCorrection()
+        sr = StopwordsRemove()
+        wl = WordNetLemma()
 
-for i in range(2):
+        # execute pipeline
+        for input_path, output_path in zip(input_paths, output_paths):
 
-    # data paths
-    path_0 = os.path.join(file_path, "../data/part_train_" + data + ".txt")
-    path_1 = os.path.join(file_path, "../data/train_" + data + "_full_1.txt")
-    path_2 = os.path.join(file_path, "../data/train_" + data + "_full_2.txt")
-    path_3 = os.path.join(file_path, "../data/train_" + data + "_full_3.txt")
-    path_4 = os.path.join(file_path, "../data/train_" + data + "_full_4.txt")
-    path_5 = os.path.join(file_path, "../data/train_" + data + "_full_prep.txt")
+            # data paths
+            path_0 = input_path
+            path_1 = input_path[:-4] + '_p1_1' + input_path[-4:]
+            path_2 = input_path[:-4] + '_p1_2' + input_path[-4:]
+            path_3 = input_path[:-4] + '_p1_3' + input_path[-4:]
+            path_4 = input_path[:-4] + '_p1_4' + input_path[-4:]
+            path_5 = output_path
 
-    # set paths
-    hs.set_paths(path_0, path_1)
-    er.set_paths(path_1, path_2)
-    ar.set_paths(path_2, path_3)
-    sr.set_paths(path_3, path_4)
-    #sc.set_paths(path_4, path_5)
-    wl.set_paths(path_4, path_5)
 
-    # run
-    hs.run()
-    er.run()
-    ar.run()
-    sr.run()
-    #sc.run()
-    wl.run()
+            # set paths
+            hs.set_paths(path_0, path_1)
+            er.set_paths(path_1, path_2)
+            ar.set_paths(path_2, path_3)
+            sr.set_paths(path_3, path_4)
+            #sc.set_paths(path_4, path_5)
+            wl.set_paths(path_4, path_5)
 
-    data = 'neg'
+            # run
+            hs.run()
+            er.run()
+            ar.run()
+            sr.run()
+            #sc.run()
+            wl.run()

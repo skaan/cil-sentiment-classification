@@ -8,7 +8,7 @@ import os
 
 class EmoticonReplace(PreprocessingInterface):
 
-    def __init__(self, dict_path='emoticon_dict.json'):
+    def __init__(self, dict_path='emoticon_dict.csv'):
         file_path = os.path.dirname(__file__)
         self.dict_path =  os.path.join(file_path, dict_path)
 

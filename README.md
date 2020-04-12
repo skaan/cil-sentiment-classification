@@ -2,7 +2,8 @@
 Please install the following to use hashtag split and spelling correction in preprocessing.
 
 ```
-pip install wordsegment
+pip install pyenchant
+\# pip install wordsegment
 pip install pyspellchecker
 ```
 
