@@ -1,4 +1,15 @@
 # Prerequisites
+Install git LFS to push/pull (train data, weights). Follow this link for installing:
+https://github.com/git-lfs/git-lfs/wiki/Installation
+
+For Ubuntu/Debian:
+```
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install git-lfs
+git lfs install
+```
+
+
 Please install the following to use hashtag split and spelling correction in preprocessing.
 
 ```

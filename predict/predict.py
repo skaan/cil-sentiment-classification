@@ -24,15 +24,23 @@ prep.process([pipeline_path], [prep_path])
 
 
 # load model
+model = tf.keras.models.load_model(
+    filepath, custom_objects=None, compile=True
+)
 
 
 # predict
-# pred =
+pred_sent = []
+with open(prep_path, mode='r') as input:
+    for line in input:
+        pred_sent.append(line)
+
+
+pred = model.predict(pred_sent)
+
 
 # save
-'''
 w = csv.writer(open(predict_path, 'w'))
 w.writerow(['Id', 'Prediction'])
 for i in range(len(pred)):
     w.writerow([i, [-1, 1][pred[i]]])
-'''
