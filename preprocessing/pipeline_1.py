@@ -32,6 +32,7 @@ class Pipeline1:
         er = EmoticonReplace()
         ar = ApposRemove()
         #sc = SpellingCorrection()
+        nr = Normalize()
         sr = StopwordsRemove()
         wl = WordNetLemma()
 
@@ -44,7 +45,8 @@ class Pipeline1:
             path_2 = input_path[:-4] + '_p1_2' + input_path[-4:]
             path_3 = input_path[:-4] + '_p1_3' + input_path[-4:]
             path_4 = input_path[:-4] + '_p1_4' + input_path[-4:]
-            path_5 = output_path
+            path_5 = input_path[:-4] + '_p1_5' + input_path[-4:]
+            path_6 = output_path
 
 
             # set paths
@@ -53,7 +55,8 @@ class Pipeline1:
             ar.set_paths(path_2, path_3)
             sr.set_paths(path_3, path_4)
             #sc.set_paths(path_4, path_5)
-            wl.set_paths(path_4, path_5)
+            nr.set_paths(path_4, path_5)
+            wl.set_paths(path_5, path_6)
 
             # run
             hs.run()
@@ -61,4 +64,5 @@ class Pipeline1:
             ar.run()
             sr.run()
             #sc.run()
+            nr.run()
             wl.run()
