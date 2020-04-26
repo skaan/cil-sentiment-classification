@@ -15,6 +15,7 @@ from emoticon_replace import EmoticonReplace
 from appos_remove import ApposRemove
 from stopwords_remove import StopwordsRemove
 #from spelling_correction import SpellingCorrection
+from normalize import Normalize
 from wordnet_lemma import WordNetLemma
 
 
