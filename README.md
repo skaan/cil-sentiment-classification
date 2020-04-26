@@ -1,21 +1,31 @@
 # Prerequisites
+
+### Git LFS
 Install git LFS to push/pull train data, weights, big files. Follow this link for installing:
 https://github.com/git-lfs/git-lfs/wiki/Installation
 
-Git LFS for Ubuntu/Debian:
+Git LFS for Ubuntu & Debian. Make sure you run ```git lfs install``` within the git repository.
 ```
 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
 sudo apt-get install git-lfs
 git lfs install
 ```
+Pull works normally.
+
+If you want to push big files (>100MB), additionally to adding them, you need to track them:
+```
+git lfs track FILEPATH
+```
 
 
+### Preprocessing
 Install the following to use hashtag split and spelling correction in preprocessing:
 ```
 pip install pyenchant
 pip install wordsegment
 ```
 
+### Models
 Install the following if you want to use BERT:
 ```
 pip install bert-for-tf2

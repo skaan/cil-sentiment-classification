@@ -92,16 +92,11 @@ class Normalize(PreprocessingInterface):
                 for word in line.split():
                     if not self.en_dict.check(word):
                         l = [''.join(g) for _, g in groupby(word)]
-                        word_n, _ = self.get_norm_string(l, 0)
-                        output.write(word_n + ' ')
-                    else:
-                        output.write(word_n + ' ')
+                        if len(l) <= 10:
+                            word, _ = self.get_norm_string(l, 0)
+
+                    output.write(word + ' ')
 
                 output.write('\n')
 
         output.close()
-
-
-n = Normalize()
-n.set_paths('normtest.txt', 'normout.txt')
-n.run()
