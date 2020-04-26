@@ -1,17 +1,51 @@
+'''
+normalizes words
+e.g  'llooooooovvvee' -> 'love'
+'''
+
 from preprocessing_interface import PreprocessingInterface
 import enchant
 from itertools import groupby
-
-#normalizes each word in a tweet
-# e.g  'llooooooovvvee' -> 'love'
-# pip install --user pyenchant
+import os
+import json
 
 class Normalize(PreprocessingInterface):
+
+    def __init__(self, dict_path='slang_dict.json'):
+        self.slang_dict = {}
+        file_path = os.path.dirname(__file__)
+        self.dict_path = os.path.join(file_path, dict_path)
+
+
+    def get_dict(self):
+        # Generate links for all slang a-z
+        linkDict=[]
+        for one in range(97,123):
+            linkDict.append(chr(one))
+
+        # scrape sites
+        http = urllib3.PoolManager()
+
+        for alpha in linkDict:
+            r = http.request('GET','https://www.noslang.com/dictionary/' + alpha)
+            soup = BeautifulSoup(r.data,'html.parser')
+
+            for i in soup.findAll('div',{'class':'dictionary-word'}):
+                slang = i.find('abbr')['title']
+                self.slang_dict[i.find('span').text[:-2]] = slang
+
+        with open(self.dict_path, 'w') as file:
+            json.dump(self.slang_dict, file)
+
+
+    def is_word(self, string):
+        return self.en_dict.check(string) or string in self.slang_dict
+
 
     def get_norm_string(self, substrings, ind):
         cur_string = ''.join(substrings)
 
-        if self.d.check(cur_string):
+        if self.is_word(cur_string):
             return cur_string, True
 
         elif ind == len(substrings):
@@ -36,39 +70,38 @@ class Normalize(PreprocessingInterface):
         else:
             return self.get_norm_string(substrings, ind+1)
 
-    def test(self):
-        self.d = enchant.Dict("en_US")
-        #print(self.d.check('abcd'))
-        words = ['lloooove','hello','aaabbcd']
-
-        for word in words:
-            # TODO do the split
-            l = [''.join(g) for _, g in groupby(word)]
-            string, is_word = self.get_norm_string(l,0)
-            print(string)
-
 
     def run(self):
         super().run();
 
-        self.d = enchant.Dict("en_US")
+        # init english dict
+        self.en_dict = enchant.Dict("en_US")
 
-        # replace emoticons in input file
+        # init slang dict
+        if not os.path.isfile(self.dict_path):
+            print('scraping ...')
+            self.get_dict()
+
+        with open(self.dict_path,'r', encoding='utf8') as file:
+            self.slang_dict = json.loads(file.read())
+
+        # normalize words
         output = open(self.output, 'w+')
         with open(self.input, mode='r') as input:
-                for line in input:
-                    for word in line.split():
-                        print(word)
-                        print(''.join(''.join(s)[:2] for _, s in itertools.groupby(word)))
-                        if self.d.check(''.join(''.join(s)[:2] for _, s in itertools.groupby(word))):
-                            output.write(''.join(''.join(s)[:2] for _, s in itertools.groupby(word)) + ' ')
-                        else:
-                            output.write(word + ' ')
+            for line in input:
+                for word in line.split():
+                    if not self.en_dict.check(word):
+                        l = [''.join(g) for _, g in groupby(word)]
+                        word_n, _ = self.get_norm_string(l, 0)
+                        output.write(word_n + ' ')
+                    else:
+                        output.write(word_n + ' ')
 
+                output.write('\n')
 
-                    output.write('\n')
+        output.close()
 
 
 n = Normalize()
 n.set_paths('normtest.txt', 'normout.txt')
-n.test()
+n.run()

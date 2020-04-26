@@ -1,8 +1,8 @@
 # Prerequisites
-Install git LFS to push/pull (train data, weights). Follow this link for installing:
+Install git LFS to push/pull train data, weights, big files. Follow this link for installing:
 https://github.com/git-lfs/git-lfs/wiki/Installation
 
-For Ubuntu/Debian:
+Git LFS for Ubuntu/Debian:
 ```
 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
 sudo apt-get install git-lfs
@@ -10,18 +10,15 @@ git lfs install
 ```
 
 
-Please install the following to use hashtag split and spelling correction in preprocessing.
-
+Install the following to use hashtag split and spelling correction in preprocessing:
 ```
 pip install pyenchant
-\# pip install wordsegment
-pip install pyspellchecker
+pip install wordsegment
 ```
 
-Get full data:
+Install the following if you want to use BERT:
 ```
-Download data zip from https://www.kaggle.com/c/cil-text-classification-2020/data.
-Move train_pos_full.txt and train_neg_full.txt into data folder
+pip install bert-for-tf2
 ```
 
 # Resources
