@@ -2,6 +2,7 @@
 #outputfile = open('sampleout.txt','w')
 from preprocessing_interface import PreprocessingInterface
 import re
+import string
 
 class parser(PreprocessingInterface):
 
@@ -15,8 +16,10 @@ class parser(PreprocessingInterface):
             for line in inputfile:
                 if (i%4 == 0):
                     tmp = " ".join(filter(lambda x:x[0]!='@' and x[0:4]!='http', line.split()))
-                    tmp = re.sub('([.,!?()])', r' \1 ', tmp)
-                    tmp = re.sub('\s{2,}', ' ', tmp)
+                    tmp = tmp.translate(str.maketrans('','',string.punctuation))
+                    #space
+                    #tmp = re.sub('([.,!?()])', r' \1 ', tmp)
+                    #tmp = re.sub('\s{2,}', ' ', tmp)
                     output.write(tmp + "\n")
                 i = i+1
 
