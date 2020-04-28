@@ -14,7 +14,8 @@ class parser(PreprocessingInterface):
 
             i = 0
             for line in inputfile:
-                if (i%4 == 0):
+                if ((i%4 == 0) and (line != 'No Post Title')):
+                    line = line[2:]
                     tmp = " ".join(filter(lambda x:x[0]!='@' and x[0:4]!='http', line.split()))
                     tmp = tmp.translate(str.maketrans('','',string.punctuation))
                     tmp = ''.join([i for i in tmp if not i.isdigit()])
