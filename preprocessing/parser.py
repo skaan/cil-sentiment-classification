@@ -17,6 +17,7 @@ class parser(PreprocessingInterface):
                 if (i%4 == 0):
                     tmp = " ".join(filter(lambda x:x[0]!='@' and x[0:4]!='http', line.split()))
                     tmp = tmp.translate(str.maketrans('','',string.punctuation))
+                    tmp = ''.join([i for i in tmp if not i.isdigit()])
                     #space
                     #tmp = re.sub('([.,!?()])', r' \1 ', tmp)
                     #tmp = re.sub('\s{2,}', ' ', tmp)
