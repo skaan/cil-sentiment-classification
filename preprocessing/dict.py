@@ -21,7 +21,7 @@ class Dict:
         self.emoticon_path = os.path.join(file_path, emoticon_path)
         self.slang_path = os.path.join(file_path, slang_path)
         self.bigram_data = bigram_data
-        self.bigram_path = file_path + '/dicts/bigram_' + os.path.basename(bigram_data)[:-4] + '.json'
+        self.bigram_path = file_path + '/dicts/bigram_snap.json'
 
 
     def scrape_emoticon(self):
