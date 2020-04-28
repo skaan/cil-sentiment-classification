@@ -12,18 +12,21 @@ git lfs install
 ```
 Pull works normally.
 
-If you want to push big files (>100MB), additionally to adding them, you need to track them:
+If you want to push big files (>100MB), track them first, and then add them:
 ```
 git lfs track FILEPATH
+git add FILEPATH
 ```
-
+After tracking, don't forget to add ```.gitattributes```.
 
 ### Preprocessing
 Install the following to use hashtag split and spelling correction in preprocessing:
 ```
 pip install pyenchant
 pip install wordsegment
+pip install textblob
 ```
+Text Blob needs nltk and nltk.download('punkt')
 
 ### Models
 Install the following if you want to use BERT:
@@ -78,3 +81,4 @@ Things where we can bring in own ideas.
 * List of sentiment data sets: https://blog.cambridgespark.com/50-free-machine-learning-datasets-sentiment-analysis-b9388f79c124
 * Polarity (negative 0 - positve 1) of words/smileys/hashtags used on twitter: http://alt.qcri.org/semeval2015/task10/data/uploads/semeval2015-task10-subtaske-testdata-gold.txt
 * https://www.trackmyhashtag.com/twitter-dataset
+* 467 Million tweets: http://snap.stanford.edu/data/bigdata/twitter7/

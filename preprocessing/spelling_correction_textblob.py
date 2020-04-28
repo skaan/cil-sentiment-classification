@@ -2,23 +2,24 @@ from preprocessing_interface import PreprocessingInterface
 import os
 import json
 import enchant
-from enchant.checker import SpellChecker
+from textblob import TextBlob
+import re
 
-class SpellingCorrectionEnchant(PreprocessingInterface):
+class SpellingCorrectionTextBlob(PreprocessingInterface):
 
     '''
     file_len and print_prog serve to print progress. file_len is the amount of
     lines the file has, print prog is after how many percent points of progress,
     the progress should be printed.
     '''
-    def __init__(self, print_prog=5, dict_path='slang_dict.json'):
+    def __init__(self, file_len=1000000, print_prog=5, dict_path='slang_dict.json', conf=0.51):
         self.file_len = 1000000
         self.print_prog=5
 
         self.slang_dict = {}
         file_path = os.path.dirname(__file__)
         self.dict_path = os.path.join(file_path, dict_path)
-
+        self.conf = conf
 
     def get_dict(self):
         # Generate links for all slang a-z
@@ -66,9 +67,6 @@ class SpellingCorrectionEnchant(PreprocessingInterface):
             self.slang_dict = json.loads(file.read())
 
 
-        # process file
-        spell = SpellChecker("en_UK")
-
         # count lines
         line_count = 0
         if os.path.isfile(self.output):
@@ -78,6 +76,8 @@ class SpellingCorrectionEnchant(PreprocessingInterface):
 
             output.close()
 
+
+        # process file
         output = open(self.output, 'a+')
         with open(self.input, mode='r') as input:
             for i in range(line_count):
@@ -92,81 +92,19 @@ class SpellingCorrectionEnchant(PreprocessingInterface):
             print('Starting at line ' + str(prog) + '. Progress: ' + str(prog_perc) + '% of ' + os.path.basename(self.input))
             prog_perc += self.print_prog
 
-            for line in input:
-                for word in line.split():
-                    if not self.is_word(word):
-                        spell.set_text(word)
-                        for err in spell:
-                            if len(err.suggest()) > 0:
-                                word = err.suggest()[0]
-
-                    output.write(word + ' ')
-                output.write('\n')
-                prog += 1
-
-                if prog > next_prog:
-                    print('Progress: ' + str(prog_perc) + '% of ' + os.path.basename(self.input))
-                    prog_perc += self.print_prog
-                    next_prog += print_steps
-
-        output.close()
-        print('Finished ' + self.input)
-
-
-    def run_batch(self):
-        super().run()
-
-        # stuff for printing progress
-        prog = 0
-        prog_perc = 0
-        print_steps = self.file_len/100 * self.print_prog
-        next_prog = print_steps
-
-        # init english dict
-        self.en_dict = enchant.Dict("en_US")
-
-        # init slang dict
-        if not os.path.isfile(self.dict_path):
-            print('scraping ...')
-            self.get_dict()
-
-        with open(self.dict_path,'r', encoding='utf8') as file:
-            self.slang_dict = json.loads(file.read())
-
-
-        # process file
-        spell = SpellChecker("en_UK")
-
-        # count lines
-        line_count = 0
-        if os.path.isfile(self.output):
-            with open(self.output, mode='r') as output:
-                for line in output:
-                    line_count += 1
-
-            output.close()
-
-        output = open(self.output, 'a+')
-        with open(self.input, mode='r') as input:
-            for i in range(line_count):
-                next(input)
-                prog += 1
-
-            if prog > next_prog:
-                prog_perc += self.print_prog
-                next_prog += print_steps
-
-
-            print('Starting at line ' + str(prog) + '. Progress: ' + str(prog_perc) + '% of ' + os.path.basename(self.input))
-            prog_perc += self.print_prog
+            regex = '[@_!#$%^&*()<>?/\|}{~:].,=+;"<\'-'
 
             for line in input:
                 for word in line.split():
-                    if not self.is_word(word):
-                        spell.set_text(word)
-                        for err in spell:
-                            if len(err.suggest()) > 0:
-                                word = err.suggest()[0]
+                    if not self.is_word(word) and word.isalpha():
+                        print(word, end=' ')
+                        blob = TextBlob(word)
+                        sug = blob.words[0].spellcheck()
+                        print(sug[0])
+                        if len(sug) > 0:
+                            conf = sug[0][1]
+                            if conf > self.conf:
+                                word = sug[0][0]
 
                     output.write(word + ' ')
                 output.write('\n')
@@ -184,19 +122,24 @@ class SpellingCorrectionEnchant(PreprocessingInterface):
     def run(self):
         super().run();
 
-        spell = SpellChecker("en_UK","en_US")
+        # TODO
 
         # correct
         output = open(self.output, 'w+')
         with open(self.input, mode='r', encoding='utf8') as input:
             for line in input:
-                spell.set_text(line)
-                for err in spell:
-                    if len(err.suggest()) > 0:
-                        sug = err.suggest()[-1]
-                        err.replace(sug)
+                for word in line.split():
+                    if not self.is_word(word):
+                        blob = TextBlob(word)
+                        sug = blob.words[0].spellcheck()[0]
+                        conf = sug[1]
+                        #print(str(conf) + ' ' + sug[0])
+                        print(sug)
+                        print()
+                        if conf > self.conf:
+                            word = sug[0]
 
-                line = spell.get_text()
-                output.write(line)
+                    output.write(word + ' ')
+                output.write('\n')
 
         output.close()

@@ -13,7 +13,6 @@ from normalize import Normalize
 from tag_remove import TagRemove
 from spelling_correction_enchant import SpellingCorrectionEnchant
 
-
 class PipelineSc:
 
     '''
@@ -69,4 +68,4 @@ test_out = os.path.join(file_path, '../data/spell_corr/test_data_sc.txt')
 
 
 p = PipelineSc()
-p.process([data_neg, data_pos, test], [data_neg_out, data_pos_out, test_out])
+p.process([data_neg], [data_neg_out])

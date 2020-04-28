@@ -6,37 +6,11 @@ e.g  'llooooooovvvee' -> 'love'
 from preprocessing_interface import PreprocessingInterface
 import enchant
 from itertools import groupby
+from dict import Dict
 import os
-import json
+
 
 class Normalize(PreprocessingInterface):
-
-    def __init__(self, dict_path='slang_dict.json'):
-        self.slang_dict = {}
-        file_path = os.path.dirname(__file__)
-        self.dict_path = os.path.join(file_path, dict_path)
-
-
-    def get_dict(self):
-        # Generate links for all slang a-z
-        linkDict=[]
-        for one in range(97,123):
-            linkDict.append(chr(one))
-
-        # scrape sites
-        http = urllib3.PoolManager()
-
-        for alpha in linkDict:
-            r = http.request('GET','https://www.noslang.com/dictionary/' + alpha)
-            soup = BeautifulSoup(r.data,'html.parser')
-
-            for i in soup.findAll('div',{'class':'dictionary-word'}):
-                slang = i.find('abbr')['title']
-                self.slang_dict[i.find('span').text[:-2]] = slang
-
-        with open(self.dict_path, 'w') as file:
-            json.dump(self.slang_dict, file)
-
 
     def is_word(self, string):
         return self.en_dict.check(string) or string in self.slang_dict
@@ -76,14 +50,8 @@ class Normalize(PreprocessingInterface):
 
         # init english dict
         self.en_dict = enchant.Dict("en_US")
-
-        # init slang dict
-        if not os.path.isfile(self.dict_path):
-            print('scraping ...')
-            self.get_dict()
-
-        with open(self.dict_path,'r', encoding='utf8') as file:
-            self.slang_dict = json.loads(file.read())
+        d = Dict()
+        self.slang_dict = d.get_slang()
 
         # normalize words
         output = open(self.output, 'w+')
