@@ -49,8 +49,6 @@ class MMST:
             self.id_to_word.append(idx)
             all_vecs += cands
 
-        print("id to word")
-        print(self.id_to_word)
 
         # get all distances and insert edges
         last_word = 0
@@ -88,9 +86,6 @@ class MMST:
 
                 if i+1 < len(all_vecs):
                     next_word = self.id_to_word[word_idx]
-
-
-        print(self.adj_graph)
 
 
     # TODO: This is bad. just insert it into mst
@@ -138,8 +133,6 @@ class MMST:
                     edge_list.append([i, j, w])
 
         edge_list = sorted(edge_list, key=lambda x: x[2])
-
-        print('edge list: ' + str(len(edge_list)))
 
         # Create union for each node
         parent = []
@@ -295,33 +288,19 @@ class MMST:
         deletable = [*range(self.correct, self.V)]
         self.get_node_costs(deletable)
 
-        print(self.adj_mst)
-        print()
-        print(deletable)
-
         #del_idx = 0
         while len(self.del_cost) > self.misspelled:
             del_node = self.del_cost[0][0]
-            print('del node: ' + str(del_node))
-            print('deletable: ', end='')
-            print(deletable)
             deletable.remove(del_node)
             self.del_cost.remove(self.del_cost[0])
             word = self.get_word(del_node)
-            print('surv cands: ', end='')
-            print(self.surviving_candidates[word])
             if len(self.surviving_candidates[word]) > 1:
-                print("delete")
                 # delete
                 self.reconnect(del_node, change_graph=True)
                 self.get_node_costs(deletable)
-                print('del cost: ', end='')
-                print([d[0] for d in self.del_cost])
                 self.surviving_candidates[word].remove(del_node)
                 #del_idx = 0
 
-            print('mst: ', end='')
-            print(self.adj_mst)
 
 
 
@@ -332,59 +311,85 @@ stop_words.add('<url>')
 
 d = enchant.Dict("en_US")
 
-sentence = "the quck fx jumps over the fence"
+
+
+####################
+sentences = ["the quck fx jumps over the fence", "the ucle loves his daghter", "rich peple have mny"]
+
+
+load = loader()
+load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
+
+####################
+
+
+
 
 stop_words = set(stopwords.words('english'))
 stop_words.add('<user>')
 stop_words.add('<url>')
 
 
-# get non-stopwords and misspelled
-print('Sentence:')
-print(sentence)
-print()
-print('Candidates:')
-correct = []
-misspelled = []
-for word in sentence.split():
-    if d.check(word) and not word in stop_words:
-        print('add to correct: ' + word)
-        correct.append(word)
-    elif not d.check(word):
-        misspelled.append(d.suggest(word))
+for sentence in sentences:
+    print()
+    print("---- new sentence ----")
+    # get non-stopwords and misspelled
+    print('Sentence:')
+    print(sentence)
+    print()
+    print('Candidates:')
+    correct = []
+    misspelled = []
+    for word in sentence.split():
+        if d.check(word) and not word in stop_words:
+            correct.append(word)
+        elif not d.check(word):
+            misspelled.append([w.lower() for w in d.suggest(word)])
 
-for sugs in misspelled:
-    print(sugs)
-print()
+    for sugs in misspelled:
+        print(sugs)
+    print()
 
 
-# visulazing
-load = loader()
-load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 
-print("---------- Input:")
+    # get node id to vec
+    id_init = 0
+    id_to_eng_word = {}
 
-corr_in, words_t = load.get_emedding(correct)
-print(words_t)
 
-cand_in = []
-for c in misspelled:
-    vecs, words_t = load.get_emedding(c)
+    # get embeddings for words
+    print()
+    print("words inserted into graph")
+    corr_in, words_t = load.get_emedding(correct)
     print(words_t)
-    cand_in.append(vecs)
+    for word_e in words_t:
+        id_to_eng_word[id_init] = word_e
+        id_init += 1
+
+    cand_in = []
+    words_can = 0
+    for c in misspelled:
+        vecs, words_cantmp = load.get_emedding(c)
+        print(words_cantmp)
+        for word_e in words_cantmp:
+            id_to_eng_word[id_init] = word_e
+            id_init += 1
+        words_can += len(words_cantmp)
+        cand_in.append(vecs)
 
 
+    g = MMST(len(words_t) + words_can)
+    g.build_graph_from_ebeddings(cand_in, corr_in)
 
-print("--------------")
-#print(corr_in)
-#print(cand_in)
+    g.build_mst()
+    g.prune_mst()
+    print()
+    print("MST:")
+    print(g.adj_mst)
+    print()
+    print("Words taken:")
+    for i_id, mst_node_set in enumerate(g.adj_mst):
+        if len(mst_node_set) > 0:
+            print(id_to_eng_word[i_id])
 
-print("---------")
-
-g = MMST(28)
-#g = MMST(6)
-g.build_graph_from_ebeddings(cand_in, corr_in)
-
-g.build_mst()
-g.prune_mst()
-print(g.adj_mst)
+    print()
