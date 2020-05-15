@@ -1,20 +1,11 @@
-'''
-Possible optimizations: Delaunay triangulation, C++.
-'''
-
-# params TODO: Print words, ret embedding, take embedder and words in build from emb
-#  algo params: Max dist, popularity to dist
-#
-#
-
-
 from collections import defaultdict
 from math import sqrt
 import enchant
 from enchant.checker import SpellChecker
 from nltk.corpus import stopwords
 from embeddings import *
-#Class to represent a graph
+
+
 class MMST:
 
     def __init__(self, vertices=0, popularity_fac=0, max_dist_fac=-1):
@@ -58,13 +49,6 @@ class MMST:
         for i in range(len(a)):
             d += pow(a[i] - b[i], 2)
         return d
-
-
-    def is_mst_edge(self, u,v):
-        for e in self.adj_mst[u]:
-            if e == v:
-                return True
-        return False
 
 
     # embed words and build graph
