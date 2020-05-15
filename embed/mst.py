@@ -291,7 +291,7 @@ class MMST:
         # always delete cheapest node that deletable.
         cand_selected = 0
         while cand_selected < self.candsets:
-            del_node, _ = self.del_cost.pop()
+            del_node, _ = self.del_cost.pop(0)
             #print('del node: {}'.format(del_node))
             deletable.remove(del_node)
             #print(deletable)
