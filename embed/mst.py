@@ -2,6 +2,12 @@
 Possible optimizations: Delaunay triangulation, C++.
 '''
 
+# params TODO: Print words, ret embedding, take embedder and words in build from emb
+#  algo params: Max dist, popularity to dist
+#
+#
+
+
 from collections import defaultdict
 from math import sqrt
 import enchant
@@ -11,89 +17,48 @@ from embeddings import *
 #Class to represent a graph
 class MMST:
 
-    def __init__(self, vertices):
+    def __init__(self, vertices=0, popularity_fac=0, max_dist_fac=-1):
         self.V = vertices
         self.adj_graph = [[] for i in range(vertices)]
         self.adj_mst = [[] for i in range(vertices)]
+
+        self.popularity_fac = popularity_fac
+        self.max_dist_fac = max_dist_fac
+
         self.del_cost = []
 
+        self.sorted_edges = []
 
-    ''' init graph'''
+        self.node_to_word = {}
+
+
+    '''graph functions'''
     def add_edge(self, u, v, w):
         self.adj_graph[u].append([v, w])
         self.adj_graph[v].append([u, w])
 
+
     def remove_node(self, node):
-        for adj in self.adj_graph:
-            for e in adj:
-                if e[0] == node:
-                    adj.remove(e)
-                    #break
+        # remove from graph
+        for adj in self.adj_graph[node]:
+            self.adj_graph[adj[0]] = [e for e in self.adj_graph[adj[0]] if e[0] != node]
         self.adj_graph[node] = []
 
-    # build graph from embedding vectors
-    def build_graph_from_ebeddings(self, cand_vecs, corr_vecs):
-        self.correct = len(corr_vecs)
-        self.misspelled = len(cand_vecs)
+        # remove from mst
+        for adj in self.adj_mst[node]:
+            self.adj_mst[adj[0]] = [e for e in self.adj_mst[adj[0]] if e[0] != node]
+        self.adj_mst[node] = []
 
-        # first c node IDs for correct nodes
-        # then d_i for candidates of i-th misspelled word
-        self.surviving_candidates = []
-        idx = len(corr_vecs)
-        self.id_to_word = [idx]
-        all_vecs = corr_vecs
-
-        for cands in cand_vecs:
-            self.surviving_candidates.append([*range(idx, idx+len(cands))])
-            idx += len(cands)
-            self.id_to_word.append(idx)
-            all_vecs += cands
+        # remove from sorted edges
+        self.sorted_edges = [e for e in self.sorted_edges if e[0] != node and e[1] != node]
 
 
-        # get all distances and insert edges
-        last_word = 0
-        next_word = self.id_to_word[0]
-        word_idx = 0
-        for i in range(len(all_vecs)):
-            #for j in range(max(i+1, word_idx), len(all_vecs)):
-            for j in range(i+1, last_word):
-                dist = 0.0
+    def distance_sqr(self, a, b):
+        d = 0.0
+        for i in range(len(a)):
+            d += pow(a[i] - b[i], 2)
+        return d
 
-                # get dist
-                for k in range(len(all_vecs[0])):
-                    dist += pow(all_vecs[i][k] - all_vecs[j][k], 2)
-
-                dist = sqrt(dist)
-
-                #insert edge
-                self.add_edge(i, j, dist)
-
-            for j in range(max(i+1, next_word),  len(all_vecs)):
-                dist = 0.0
-
-                # get dist
-                for k in range(len(all_vecs[0])):
-                    dist += pow(all_vecs[i][k] - all_vecs[j][k], 2)
-
-                dist = sqrt(dist)
-
-                #insert edge
-                self.add_edge(i, j, dist)
-
-            if i + 1 == next_word:
-                last_word = next_word
-                word_idx += 1
-
-                if i+1 < len(all_vecs):
-                    next_word = self.id_to_word[word_idx]
-
-
-    # TODO: This is bad. just insert it into mst
-    def get_cost(self, u, v):
-        for e in self.adj_graph[u]:
-            if e[0] == v:
-                return e[1]
-        return 0
 
     def is_mst_edge(self, u,v):
         for e in self.adj_mst[u]:
@@ -102,12 +67,80 @@ class MMST:
         return False
 
 
+    # embed words and build graph
+    def build_graph_from_words(self, embedder, correct, candidates, verbose=True):
+        # convert words to embeddings
+        # Keep track of: Which node elem which canset, node -> word
+        # Init: Survivors of a candset
+        node_count = 0
+        self.surviving_candidates = []
+
+        embs, words = embedder.get_emedding(correct)
+        self.correct = len(words)
+        self.candset_borders = [len(words)]
+        for c in candidates:
+            embs_c, words_c = load.get_emedding(c)
+            embs += embs_c
+            words += words_c
+            self.candset_borders.append(len(words))
+            self.surviving_candidates.append([*range(self.candset_borders[-2], self.candset_borders[-1])])
+        self.candsets = len(self.candset_borders) - 1
+
+        for i, word in enumerate(words):
+            self.node_to_word[i] = word
+
+        if verbose:
+            print('built graph with the following words:')
+            print(words, end='\n\n')
+
+
+        # init graph
+        self.V = self.candset_borders[-1]
+        self.adj_graph = [[] for i in range(self.V)]
+        self.adj_mst = [[] for i in range(self.V)]
+        self.del_cost = []
+
+
+        # add edges from correct nodes to all nodes
+        for i in range(self.correct):
+            for j in range(i+1, self.V):
+                dist_sqr = self.distance_sqr(embs[i], embs[j])
+                self.add_edge(i, j, dist_sqr)
+
+
+        # add edges between candsets
+        for i in range(len(self.candset_borders)-1):
+            for j in range(self.candset_borders[i], self.candset_borders[i+1]):
+                for k in range(self.candset_borders[i+1], self.V):
+                    dist_sqr = self.distance_sqr(embs[j], embs[k])
+                    self.add_edge(j, k, dist_sqr)
+
+
+
+    '''pretty prints'''
+    def pprint_adjecency(self, graph, weights=False):
+        for i, l in enumerate(graph):
+            print(i, end=':    ')
+            if weights:
+                print(l)
+            else:
+                print([n[0] for n in l])
+
+
+    def print_mst_words(self):
+        for i, adj in enumerate(self.adj_mst):
+            if len(adj) > 0:
+                print(self.node_to_word.get(i), end=', ')
+        print()
+
+
+
     '''Build initial MST using Kruskal'''
-    # find union parent
     def find(self, parent, i):
         if parent[i] == i:
             return i
         return self.find(parent, parent[i])
+
 
     # join 2 unions
     def union(self, parent, rank, x, y):
@@ -123,16 +156,17 @@ class MMST:
             parent[yroot] = xroot
             rank[xroot] += 1
 
+
     # Construct MST
     def build_mst(self):
         # get list of edges and sort according to weight
-        edge_list = []
+        self.sorted_edges = []
         for i, neighbors in enumerate(self.adj_graph):
             for j, w in neighbors:
                 if i < j:
-                    edge_list.append([i, j, w])
+                    self.sorted_edges.append([i, j, w])
 
-        edge_list = sorted(edge_list, key=lambda x: x[2])
+        self.sorted_edges = sorted(self.sorted_edges, key=lambda x: x[2])
 
         # Create union for each node
         parent = []
@@ -148,7 +182,7 @@ class MMST:
         while edges_taken < self.V -1 :
 
             # Look at smallest edge still available
-            u,v,w =  edge_list[curr_edge]
+            u,v,w =  self.sorted_edges[curr_edge]
             curr_edge += 1
             x = self.find(parent, u)
             y = self.find(parent, v)
@@ -156,8 +190,8 @@ class MMST:
             # Take edge if that doesn't cause a cycle
             if x != y:
                 edges_taken += 1
-                self.adj_mst[u].append(v)
-                self.adj_mst[v].append(u)
+                self.adj_mst[u].append([v, w])
+                self.adj_mst[v].append([u, w])
                 self.union(parent, rank, x, y)
 
 
@@ -169,101 +203,65 @@ class MMST:
     def reconnect(self, node, change_graph=False):
         # if only one MST neighbour, just delete node and don't change anything.
         if len(self.adj_mst[node]) == 1:
-            other = self.adj_mst[node][0]
-            cost = -self.get_cost(node, other)
+            cost = -self.adj_mst[node][0][1]
 
             if change_graph:
-                self.adj_mst[node] = []
-                self.adj_mst[other].remove(node)
                 self.remove_node(node)
 
             return cost
 
+        cost = 0.0
 
-        # ---- TODO: This is really badly done. look for conn. comp
-        component = [-1] * self.V
+        # get connected components (= build unions for kruskal)
+        parent = [-1] * self.V
+        rank = [0] * self.V
         visited = [False] * self.V
-        visited[node] = True
         queue = []
 
-        comp = 0
-        for start in range(self.V):
+        for start, w in self.adj_mst[node]:
+            cost -= w
 
-            if not visited[start]:
-                queue.append(start)
-                visited[start] = True
-
-                while queue:
-                    s = queue.pop(0)
-
-                    for i in self.adj_mst[s]:
-                        if not visited[i] and i != node:
-                            component[i] = comp
-                            queue.append(i)
-                            visited[i] = True
-
-                comp += 1
-        ## ----
-
-
-        # find cheapest outgoing edge for each disconn component
-        cheapest_edges = []
-        for other in self.adj_mst[node]:
-            min_edge =[-1, -1, 10000]
-
-            # do bfs on component to find cheapest outgoing edge
-            visited = [False] * self.V
-            queue = []
-
-            queue.append(other)
-            visited[other] = True
+            queue.append(start)
+            visited[start] = True
+            parent[start] = start
 
             while queue:
                 s = queue.pop(0)
 
-                for i, cost in self.adj_graph[s]:
+                for i, _ in self.adj_mst[s]:
                     if not visited[i] and i != node:
-                        if self.is_mst_edge(s, i):
-                            queue.append(i)
-                            visited[i] = True
-                        else:
-                            if component[i] != component[s] and cost < min_edge[2]:
-                                min_edge = [min(s,i), max(s,i), cost]
+                        parent[i] = start
+                        rank[start] += 1
+                        queue.append(i)
+                        visited[i] = True
 
-            cheapest_edges.append(min_edge)
-
-
-        # delete node from MST
-        del_cost = 0
-        for other in self.adj_mst[node]:
-            del_cost -= self.get_cost(node, other)
-            if change_graph:
-                self.adj_mst[other].remove(node)
-
-        # delete node from graph
+        # remove node
+        edges_missing = len(self.adj_mst[node]) - 1
         if change_graph:
             self.remove_node(node)
-            self.adj_mst[node] = []
 
 
-        # delete duplicate edges
-        cheapest_edges = sorted(cheapest_edges, key=lambda x: (x[0], x[1]))
-        i = 1
-        while i < len(cheapest_edges):
-            if cheapest_edges[i][0] == cheapest_edges[i-1][0] and cheapest_edges[i][1] == cheapest_edges[i-1][1]:
-                cheapest_edges.remove(cheapest_edges[i])
-            else:
-                i += 1
+        # run last steps of kruskal to rejoin connected components
+        curr_edge = 0
+        edges_taken = 0
 
+        while edges_taken < edges_missing:
+            # Look at smallest edge still available
+            u,v,w =  self.sorted_edges[curr_edge]
+            curr_edge += 1
+            x = self.find(parent, u)
+            y = self.find(parent, v)
 
-        # reconnect MST
-        for e in cheapest_edges:
-            del_cost += e[2]
-            if change_graph:
-                self.adj_mst[e[0]].append(e[1])
-                self.adj_mst[e[1]].append(e[0])
+            # Take edge if that doesn't cause a cycle
+            if x != y:
+                edges_taken += 1
+                cost += w
+                if change_graph:
+                    self.adj_mst[u].append([v, w])
+                    self.adj_mst[v].append([u, w])
+                self.union(parent, rank, x, y)
 
-        return del_cost
+        return cost
 
 
     # for each node, get cost of deleting
@@ -276,68 +274,60 @@ class MMST:
         self.del_cost = sorted(self.del_cost, key=lambda x: x[1])
 
 
-    def get_word(self, node_id):
-        for i, upper in enumerate(self.id_to_word):
+    def get_surviving_candidates(self, node_id):
+        for i, upper in enumerate(self.candset_borders):
             if upper > node_id:
-                return i-1
+                return self.surviving_candidates[i-1]
 
 
-    # TODO: Performance is terrible like this. Update del_cost when deleting
-    def prune_mst(self):
-        # always delete cheapest node that deletable.
+    def build_mmst(self):
+        self.build_mst()
+
         deletable = [*range(self.correct, self.V)]
         self.get_node_costs(deletable)
 
-        #del_idx = 0
-        while len(self.del_cost) > self.misspelled:
-            del_node = self.del_cost[0][0]
+        print(deletable)
+
+        # always delete cheapest node that deletable.
+        cand_selected = 0
+        while cand_selected < self.candsets:
+            del_node, _ = self.del_cost.pop()
+            #print('del node: {}'.format(del_node))
             deletable.remove(del_node)
-            self.del_cost.remove(self.del_cost[0])
-            word = self.get_word(del_node)
-            if len(self.surviving_candidates[word]) > 1:
+            #print(deletable)
+
+            surv_cands = self.get_surviving_candidates(del_node)
+            if len(surv_cands) > 1:
                 # delete
                 self.reconnect(del_node, change_graph=True)
                 self.get_node_costs(deletable)
-                self.surviving_candidates[word].remove(del_node)
-                #del_idx = 0
-
-
-
+                surv_cands.remove(del_node)
+            else:
+                cand_selected += 1
 
 # Driver code
+# set dicts
 stop_words = set(stopwords.words('english'))
 stop_words.add('<user>')
 stop_words.add('<url>')
 
 d = enchant.Dict("en_US")
 
+# input sentences
+sentences = ["the quck fox jumps over the new fnce"]
 
 
-####################
-sentences = ["the quck fx jumps over the fence", "the ucle loves his daghter", "rich peple have mny"]
-
-
+# init embedder
 load = loader()
 load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 
-####################
-
-
-
-
-stop_words = set(stopwords.words('english'))
-stop_words.add('<user>')
-stop_words.add('<url>')
-
-
+# feed sentences
 for sentence in sentences:
-    print()
-    print("---- new sentence ----")
-    # get non-stopwords and misspelled
+    print("--------------------------------")
     print('Sentence:')
     print(sentence)
-    print()
-    print('Candidates:')
+
+    # remove stopwords, split into correct and misspelled
     correct = []
     misspelled = []
     for word in sentence.split():
@@ -346,50 +336,13 @@ for sentence in sentences:
         elif not d.check(word):
             misspelled.append([w.lower() for w in d.suggest(word)])
 
+    print('\nCandidates:')
     for sugs in misspelled:
         print(sugs)
     print()
 
-
-
-    # get node id to vec
-    id_init = 0
-    id_to_eng_word = {}
-
-
-    # get embeddings for words
-    print()
-    print("words inserted into graph")
-    corr_in, words_t = load.get_emedding(correct)
-    print(words_t)
-    for word_e in words_t:
-        id_to_eng_word[id_init] = word_e
-        id_init += 1
-
-    cand_in = []
-    words_can = 0
-    for c in misspelled:
-        vecs, words_cantmp = load.get_emedding(c)
-        print(words_cantmp)
-        for word_e in words_cantmp:
-            id_to_eng_word[id_init] = word_e
-            id_init += 1
-        words_can += len(words_cantmp)
-        cand_in.append(vecs)
-
-
-    g = MMST(len(words_t) + words_can)
-    g.build_graph_from_ebeddings(cand_in, corr_in)
-
-    g.build_mst()
-    g.prune_mst()
-    print()
-    print("MST:")
-    print(g.adj_mst)
-    print()
-    print("Words taken:")
-    for i_id, mst_node_set in enumerate(g.adj_mst):
-        if len(mst_node_set) > 0:
-            print(id_to_eng_word[i_id])
-
-    print()
+    # init graph
+    g = MMST()
+    g.build_graph_from_words(load, correct, misspelled)
+    g.build_mmst()
+    g.print_mst_words()
