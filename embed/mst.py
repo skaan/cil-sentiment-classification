@@ -2,13 +2,15 @@ from collections import defaultdict
 from math import sqrt
 import enchant
 from enchant.checker import SpellChecker
+from textblob import TextBlob
 from nltk.corpus import stopwords
 from embeddings import *
+from wordfreq import zipf_frequency
 
 
 class MMST:
 
-    def __init__(self, vertices=0, popularity_fac=0, max_dist_fac=-1):
+    def __init__(self, vertices=0, popularity_fac=0.05, max_dist_fac=-1):
         self.V = vertices
         self.adj_graph = [[] for i in range(vertices)]
         self.adj_mst = [[] for i in range(vertices)]
@@ -51,8 +53,15 @@ class MMST:
         return d
 
 
+    def is_mst_edge(self, u,v):
+        for e in self.adj_mst[u]:
+            if e == v:
+                return True
+        return False
+
+
     # embed words and build graph
-    def build_graph_from_words(self, embedder, correct, candidates, verbose=True):
+    def build_graph_from_words(self, embedder, correct, candidates, conf=None, verbose=True):
         # convert words to embeddings
         # Keep track of: Which node elem which canset, node -> word
         # Init: Survivors of a candset
@@ -85,19 +94,34 @@ class MMST:
         self.del_cost = []
 
 
-        # add edges from correct nodes to all nodes
-        for i in range(self.correct):
-            for j in range(i+1, self.V):
-                dist_sqr = self.distance_sqr(embs[i], embs[j])
-                self.add_edge(i, j, dist_sqr)
+        if conf is None:
+            # add edges from correct nodes to all nodes
+            for i in range(self.correct):
+                for j in range(i+1, self.V):
+                    dist_sqr = self.distance_sqr(embs[i], embs[j])
+                    print("{} {} {}".format(words[i], words[j], dist_sqr))
+                    self.add_edge(i, j, dist_sqr)
 
 
-        # add edges between candsets
-        for i in range(len(self.candset_borders)-1):
-            for j in range(self.candset_borders[i], self.candset_borders[i+1]):
-                for k in range(self.candset_borders[i+1], self.V):
-                    dist_sqr = self.distance_sqr(embs[j], embs[k])
-                    self.add_edge(j, k, dist_sqr)
+            # add edges between candsets
+            for i in range(len(self.candset_borders)-1):
+                for j in range(self.candset_borders[i], self.candset_borders[i+1]):
+                    for k in range(self.candset_borders[i+1], self.V):
+                        dist_sqr = self.distance_sqr(embs[j], embs[k])
+                        self.add_edge(j, k, dist_sqr)
+
+        else:
+            # add edges from candsets
+            for i in range(len(self.candset_borders)-1):
+                for j in range(self.candset_borders[i], self.candset_borders[i+1]):
+                    for k in range(0, self.candset_borders[i]):
+                        dist_sqr = self.distance_sqr(embs[j], embs[k])
+                        dist_sqr -= dist_sqr*conf.get_score(words[j])*self.popularity_fac
+                        self.adj_graph[j].append([k, dist_sqr])
+                    for k in range(self.candset_borders[i+1], self.V):
+                        dist_sqr = self.distance_sqr(embs[j], embs[k])
+                        dist_sqr -= dist_sqr*conf.get_score(words[j])*self.popularity_fac
+                        self.adj_graph[j].append([k, dist_sqr])
 
 
 
@@ -147,8 +171,8 @@ class MMST:
         self.sorted_edges = []
         for i, neighbors in enumerate(self.adj_graph):
             for j, w in neighbors:
-                if i < j:
-                    self.sorted_edges.append([i, j, w])
+                #if i < j:
+                self.sorted_edges.append([i, j, w])
 
         self.sorted_edges = sorted(self.sorted_edges, key=lambda x: x[2])
 
@@ -270,15 +294,11 @@ class MMST:
         deletable = [*range(self.correct, self.V)]
         self.get_node_costs(deletable)
 
-        print(deletable)
-
         # always delete cheapest node that deletable.
         cand_selected = 0
         while cand_selected < self.candsets:
             del_node, _ = self.del_cost.pop(0)
-            #print('del node: {}'.format(del_node))
             deletable.remove(del_node)
-            #print(deletable)
 
             surv_cands = self.get_surviving_candidates(del_node)
             if len(surv_cands) > 1:
@@ -289,6 +309,15 @@ class MMST:
             else:
                 cand_selected += 1
 
+
+class PriorScore:
+    def get_score(self, word):
+        # get popularity using wordfreq zipf_frequency
+        return zipf_frequency(word, 'en')
+
+
+
+
 # Driver code
 # set dicts
 stop_words = set(stopwords.words('english'))
@@ -298,7 +327,7 @@ stop_words.add('<url>')
 d = enchant.Dict("en_US")
 
 # input sentences
-sentences = ["the quck fox jumps over the new fnce"]
+sentences = ["Helo I am a mispeelled sentnce and need corection"]
 
 
 # init embedder
@@ -309,7 +338,7 @@ load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 for sentence in sentences:
     print("--------------------------------")
     print('Sentence:')
-    print(sentence)
+    print(sentence, end='\n\n')
 
     # remove stopwords, split into correct and misspelled
     correct = []
@@ -318,15 +347,30 @@ for sentence in sentences:
         if d.check(word) and not word in stop_words:
             correct.append(word)
         elif not d.check(word):
-            misspelled.append([w.lower() for w in d.suggest(word)])
+            misspelled.append([w.lower() for w in d.suggest(word) if len(word) > 1])
+            '''
+            # get correction using TextBlob
+            blob = TextBlob(word)
+            sug = blob.words[0].spellcheck()
+            misspelled.append([w[0].lower() for w in sug])
+            conf += [w[1] for w in sug]
+            '''
 
-    print('\nCandidates:')
-    for sugs in misspelled:
-        print(sugs)
-    print()
+
+    print('enchant\'s correction:', end='  ')
+    spell = SpellChecker("en_UK","en_US")
+    spell.set_text(sentence)
+    for err in spell:
+        if len(err.suggest()) > 0:
+            sug = err.suggest()[-1]
+            err.replace(sug)
+    print(spell.get_text(), end='\n\n')
+
 
     # init graph
-    g = MMST()
-    g.build_graph_from_words(load, correct, misspelled)
+    g = MMST(popularity_fac=0.05)
+    ps = PriorScore()
+    g.build_graph_from_words(load, correct, misspelled, ps)
     g.build_mmst()
+    print('MST words taken:')
     g.print_mst_words()
