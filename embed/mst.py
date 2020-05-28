@@ -2,15 +2,13 @@ from collections import defaultdict
 from math import sqrt
 import enchant
 from enchant.checker import SpellChecker
-from textblob import TextBlob
 from nltk.corpus import stopwords
 from embeddings import *
-from wordfreq import zipf_frequency
 
 
 class MMST:
 
-    def __init__(self, vertices=0, popularity_fac=0.05, max_dist_fac=-1):
+    def __init__(self, vertices=0, popularity_fac=0, max_dist_fac=-1):
         self.V = vertices
         self.adj_graph = [[] for i in range(vertices)]
         self.adj_mst = [[] for i in range(vertices)]
@@ -23,6 +21,86 @@ class MMST:
         self.sorted_edges = []
 
         self.node_to_word = {}
+
+
+    '''spelling correction'''
+    def input_sentence(self, sentence, embedder, prior=None, verbose=True):
+        # @Phil: Do not translate this function.
+        # We will call cpp functions from here.
+
+        stop_words = set(stopwords.words('english'))
+        stop_words.add('<user>')
+        stop_words.add('<url>')
+        d = enchant.Dict("en_US")
+
+        # remove stopwords, split into correct and misspelled
+        correct = []
+        candidates = []
+        if verbose: print('\nCandidates:')
+        for word in sentence.split():
+            if d.check(word) and not word in stop_words and len(word) > 1:
+                correct.append(word)
+            elif not d.check(word) and len(word) > 1:
+                candidates.append([w.lower() for w in d.suggest(word)])
+                if verbose:
+                    print(word, end=': ')
+                    print(candidates[-1])
+
+
+        # get priors
+        # TODO
+
+
+        # convert words to embeddings
+        # Keep track of: Which node elem which canset, node -> word
+        # Init: Survivors of a candset
+        node_count = 0
+        self.surviving_candidates = []
+
+        embs, words = embedder.get_emedding(correct)
+        self.correct = len(words)
+        self.candset_borders = [len(words)]
+        for c in candidates:
+            embs_c, words_c = load.get_emedding(c)
+            embs += embs_c
+            words += words_c
+            self.candset_borders.append(len(words))
+            self.surviving_candidates.append([*range(self.candset_borders[-2], self.candset_borders[-1])])
+        self.candsets = len(self.candset_borders) - 1
+
+        for i, word in enumerate(words):
+            self.node_to_word[i] = word
+
+        if verbose:
+            print('built graph with the following words:')
+            print(words, end='\n\n')
+
+
+        # do MST NOTE: These two functions will be cpp
+        self.build_graph_from_embs(embs)
+        self.build_mmst()
+
+
+        # replace mst words in sentence
+        mst_pos = 0
+        word_pos = 1
+        corr_sent = ""
+        for word in sentence.split():
+            if word in stop_words or len(word) <= 1:
+                corr_sent += word + " "
+            elif d.check(word):
+                corr_sent += word + " "
+            else:
+                # search for chosen candidate
+                for i in range(self.candset_borders[word_pos-1], self.candset_borders[word_pos]):
+                    if len(self.adj_mst[i]) > 0:
+                        corr_sent += self.node_to_word.get(i) + " "
+                        break
+
+                word_pos += 1
+
+        return corr_sent
+
 
 
     '''graph functions'''
@@ -53,39 +131,8 @@ class MMST:
         return d
 
 
-    def is_mst_edge(self, u,v):
-        for e in self.adj_mst[u]:
-            if e == v:
-                return True
-        return False
-
-
     # embed words and build graph
-    def build_graph_from_words(self, embedder, correct, candidates, conf=None, verbose=True):
-        # convert words to embeddings
-        # Keep track of: Which node elem which canset, node -> word
-        # Init: Survivors of a candset
-        node_count = 0
-        self.surviving_candidates = []
-
-        embs, words = embedder.get_emedding(correct)
-        self.correct = len(words)
-        self.candset_borders = [len(words)]
-        for c in candidates:
-            embs_c, words_c = load.get_emedding(c)
-            embs += embs_c
-            words += words_c
-            self.candset_borders.append(len(words))
-            self.surviving_candidates.append([*range(self.candset_borders[-2], self.candset_borders[-1])])
-        self.candsets = len(self.candset_borders) - 1
-
-        for i, word in enumerate(words):
-            self.node_to_word[i] = word
-
-        if verbose:
-            print('built graph with the following words:')
-            print(words, end='\n\n')
-
+    def build_graph_from_embs(self, embs):
 
         # init graph
         self.V = self.candset_borders[-1]
@@ -94,34 +141,19 @@ class MMST:
         self.del_cost = []
 
 
-        if conf is None:
-            # add edges from correct nodes to all nodes
-            for i in range(self.correct):
-                for j in range(i+1, self.V):
-                    dist_sqr = self.distance_sqr(embs[i], embs[j])
-                    print("{} {} {}".format(words[i], words[j], dist_sqr))
-                    self.add_edge(i, j, dist_sqr)
+        # add edges from correct nodes to all nodes
+        for i in range(self.correct):
+            for j in range(i+1, self.V):
+                dist_sqr = self.distance_sqr(embs[i], embs[j])
+                self.add_edge(i, j, dist_sqr)
 
 
-            # add edges between candsets
-            for i in range(len(self.candset_borders)-1):
-                for j in range(self.candset_borders[i], self.candset_borders[i+1]):
-                    for k in range(self.candset_borders[i+1], self.V):
-                        dist_sqr = self.distance_sqr(embs[j], embs[k])
-                        self.add_edge(j, k, dist_sqr)
-
-        else:
-            # add edges from candsets
-            for i in range(len(self.candset_borders)-1):
-                for j in range(self.candset_borders[i], self.candset_borders[i+1]):
-                    for k in range(0, self.candset_borders[i]):
-                        dist_sqr = self.distance_sqr(embs[j], embs[k])
-                        dist_sqr -= dist_sqr*conf.get_score(words[j])*self.popularity_fac
-                        self.adj_graph[j].append([k, dist_sqr])
-                    for k in range(self.candset_borders[i+1], self.V):
-                        dist_sqr = self.distance_sqr(embs[j], embs[k])
-                        dist_sqr -= dist_sqr*conf.get_score(words[j])*self.popularity_fac
-                        self.adj_graph[j].append([k, dist_sqr])
+        # add edges between candsets
+        for i in range(len(self.candset_borders)-1):
+            for j in range(self.candset_borders[i], self.candset_borders[i+1]):
+                for k in range(self.candset_borders[i+1], self.V):
+                    dist_sqr = self.distance_sqr(embs[j], embs[k])
+                    self.add_edge(j, k, dist_sqr)
 
 
 
@@ -171,8 +203,8 @@ class MMST:
         self.sorted_edges = []
         for i, neighbors in enumerate(self.adj_graph):
             for j, w in neighbors:
-                #if i < j:
-                self.sorted_edges.append([i, j, w])
+                if i < j:
+                    self.sorted_edges.append([i, j, w])
 
         self.sorted_edges = sorted(self.sorted_edges, key=lambda x: x[2])
 
@@ -310,67 +342,35 @@ class MMST:
                 cand_selected += 1
 
 
-class PriorScore:
-    def get_score(self, word):
-        # get popularity using wordfreq zipf_frequency
-        return zipf_frequency(word, 'en')
+
+
 
 
 
 
 # Driver code
-# set dicts
-stop_words = set(stopwords.words('english'))
-stop_words.add('<user>')
-stop_words.add('<url>')
-
-d = enchant.Dict("en_US")
 
 # input sentences
-sentences = ["Helo I am a mispeelled sentnce and need corection"]
+sentences = ["glad i dot have taks tomorrow ! ! #thankful #startho",
+    "<user> hi harry ! did u havea good time in aus ? i didnt get 2 see u maybe next year ! follow me back if u can , would bea dreamcome truex",
+    "<user> <user> lol of course , there wass more people just no room",
+    "2 amigos design protector skin decal sticker for apple macbook pro 17 inch ( original , separate trackpad button ... <url>",
+    "this has gt to b da worse hangover ever i cant stop puking",
+    "stomach ache i juss ate too much tonight ! ! * doris voice *"]
 
 
 # init embedder
 load = loader()
 load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 
+
 # feed sentences
 for sentence in sentences:
     print("--------------------------------")
     print('Sentence:')
-    print(sentence, end='\n\n')
 
-    # remove stopwords, split into correct and misspelled
-    correct = []
-    misspelled = []
-    for word in sentence.split():
-        if d.check(word) and not word in stop_words:
-            correct.append(word)
-        elif not d.check(word):
-            misspelled.append([w.lower() for w in d.suggest(word) if len(word) > 1])
-            '''
-            # get correction using TextBlob
-            blob = TextBlob(word)
-            sug = blob.words[0].spellcheck()
-            misspelled.append([w[0].lower() for w in sug])
-            conf += [w[1] for w in sug]
-            '''
-
-
-    print('enchant\'s correction:', end='  ')
-    spell = SpellChecker("en_UK","en_US")
-    spell.set_text(sentence)
-    for err in spell:
-        if len(err.suggest()) > 0:
-            sug = err.suggest()[-1]
-            err.replace(sug)
-    print(spell.get_text(), end='\n\n')
-
+    print(sentence)
 
     # init graph
-    g = MMST(popularity_fac=0.05)
-    ps = PriorScore()
-    g.build_graph_from_words(load, correct, misspelled, ps)
-    g.build_mmst()
-    print('MST words taken:')
-    g.print_mst_words()
+    g = MMST()
+    print(g.input_sentence(sentence, load))
