@@ -61,13 +61,16 @@ class MMST:
         embs, words = embedder.get_emedding(correct)
         self.correct = len(words)
         self.candset_borders = [len(words)]
+        self.candsets = 0
+
         for c in candidates:
             embs_c, words_c = load.get_emedding(c)
             embs += embs_c
             words += words_c
+            if len(words_c) > 0: self.candsets + 1
             self.candset_borders.append(len(words))
             self.surviving_candidates.append([*range(self.candset_borders[-2], self.candset_borders[-1])])
-        self.candsets = len(self.candset_borders) - 1
+
 
         for i, word in enumerate(words):
             self.node_to_word[i] = word
@@ -89,7 +92,7 @@ class MMST:
         for word in sentence.split():
             if word in stop_words or len(word) <= 1:
                 corr_sent += word + " "
-            elif d.check(word):
+            elif d.check(word) or not word in words:
                 corr_sent += word + " "
             else:
                 # search for chosen candidate
@@ -363,7 +366,9 @@ nb = len(sentences)
 cores = mp.cpu_count()
 share = floor(nb/cores)
 
-output = np.empty(nb)
+#output = np.empty(nb)
+
+output = [""]*nb
 
 # init embedder
 load = loader()
@@ -372,16 +377,16 @@ load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 def checker(sentences,pre,post):
 	g = MMST()
 	for x in range(pre,post):
-		tmp = g.input_sentence(sentences[x],load)
+		tmp = g.input_sentence(sentences[x], load, verbose=True)
 		output[x] = tmp
-		
+
 pool = mp.Pool(cores)
 
 for i in range(nb):
 	pre = i*share
 	post = min(pre+share,nb)
 	pool.apply(checker,args=(sentences,pre,post))
-	
+
 pool.close()
 
 # feed sentences
