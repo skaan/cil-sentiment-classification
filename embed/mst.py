@@ -352,12 +352,12 @@ class MMST:
 # Driver code
 
 # input sentences
-sentences = ["glad i dot have taks tomorrow ! ! #thankful #startho",
-    "<user> hi harry ! did u havea good time in aus ? i didnt get 2 see u maybe next year ! follow me back if u can , would bea dreamcome truex",
-    "<user> <user> lol of course , there wass more people just no room",
-    "2 amigos design protector skin decal sticker for apple macbook pro 17 inch ( original , separate trackpad button ... <url>",
-    "this has gt to b da worse hangover ever i cant stop puking",
-    "stomach ache i juss ate too much tonight ! ! * doris voice *"]
+sentences = []
+
+with open("../data/raw/part_train_neg.txt", "r") as f:
+	for line in f:
+		sentences.append(line)
+
 
 nb = len(sentences)
 cores = mp.cpu_count()
@@ -415,4 +415,3 @@ print(output)
 #        for line in f:
 #            print(line)
 #            final.write(line)
-
