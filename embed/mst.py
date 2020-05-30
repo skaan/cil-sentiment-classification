@@ -368,34 +368,32 @@ share = floor(nb/cores)
 
 #output = np.empty(nb)
 
-output = [""]*nb
 
 # init embedder
 load = loader()
 load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 
-def checker(sentences,pre,post):
-	g = MMST()
-	for x in range(pre,post):
-		tmp = g.input_sentence(sentences[x], load, verbose=True)
-		output[x] = tmp
+def checker(sentences, pre, post, id):
+    g = MMST()
+    with open("mst_corr_" + str(id) + ".txt", "w+") as f:
+        for x in range(pre,post):
+            f.write(g.input_sentence(sentences[x], load, verbose=False))
+
 
 pool = mp.Pool(cores)
 
 for i in range(nb):
 	pre = i*share
 	post = min(pre+share,nb)
-	pool.apply(checker,args=(sentences,pre,post))
+	pool.apply(checker,args=(sentences, pre, post, i))
 
 pool.close()
 
-# feed sentences
-#for sentence in sentences:
-#    print("--------------------------------")
-#    print('Sentence:')
-
-#    print(sentence)
-
-    # init graph
-#    g = MMST()
-#    print(g.input_sentence(sentence, load))
+'''
+pool.join()
+final = open("final_output.txt", 'w+')
+for i in range(nb):
+    with open("mst_corr_" + str(i) + ".txt", "w+") as f:
+        for line in f:
+            final.write(line)
+'''
