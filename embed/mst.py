@@ -2,8 +2,9 @@ from collections import defaultdict
 from math import sqrt, floor
 import enchant
 from enchant.checker import SpellChecker
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords as wn
 from embeddings import *
+import threading
 import multiprocessing as mp
 
 
@@ -29,10 +30,6 @@ class MMST:
         # @Phil: Do not translate this function.
         # We will call cpp functions from here.
 
-        stop_words = set(stopwords.words('english'))
-        stop_words.add('<user>')
-        stop_words.add('<url>')
-        d = enchant.Dict("en_US")
 
         # remove stopwords, split into correct and misspelled
         correct = []
@@ -366,34 +363,56 @@ nb = len(sentences)
 cores = mp.cpu_count()
 share = floor(nb/cores)
 
-#output = np.empty(nb)
+#np.empty(nb)
+#wn.ensure_loaded()            # first access to wn transforms it
+
+stop_words = set(wn.words('english'))
+stop_words.add('<user>')
+stop_words.add('<url>')
+d = enchant.Dict("en_US")
 
 
+output = [""]*nb
 # init embedder
 load = loader()
 load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 
-def checker(sentences, pre, post, id):
+def checker(pre, post, id):
+    #print(id)
+    global output
+    global sentences
     g = MMST()
-    with open("mst_corr_" + str(id) + ".txt", "w+") as f:
-        for x in range(pre,post):
-            f.write(g.input_sentence(sentences[x], load, verbose=False))
+    #with open("output.txt", "w+") as f:
+    for x in range(pre,post):
+      tmp = g.input_sentence(sentences[x], load, verbose=False)
+      #f.write()
+      #lock = threading.Lock()
+      output[x] = tmp
+      #print(output[x])
+      #threading.Release()
+
+#executor = ThreadPoolExecutor(cores)
+
+#tp = threading.Thread(target=checker, args=(0, 2, 1,))
+#tp.start()
+#tp.join()
+
+ts = [threading.Thread(target=checker, args=(i*share, min((i+1)*share,nb), i,)) for i in range(nb)]
+
+for t in ts:
+	t.start()
+for t in ts:
+	t.join()
+#pool.close()
 
 
-pool = mp.Pool(cores)
+#executor.shutdown
 
-for i in range(nb):
-	pre = i*share
-	post = min(pre+share,nb)
-	pool.apply(checker,args=(sentences, pre, post, i))
+print(output)
+#final = open("final_output.txt", 'w+')
+#for i in range(nb):
+#    with open("mst_corr_" + str(i) + ".txt", "w+") as f:
+#        for line in f:
+#            print(line)
+#            final.write(line)
 
-pool.close()
-
-'''
-pool.join()
-final = open("final_output.txt", 'w+')
-for i in range(nb):
-    with open("mst_corr_" + str(i) + ".txt", "w+") as f:
-        for line in f:
-            final.write(line)
-'''
