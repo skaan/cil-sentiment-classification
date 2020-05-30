@@ -1,9 +1,10 @@
 from collections import defaultdict
-from math import sqrt
+from math import sqrt, floor
 import enchant
 from enchant.checker import SpellChecker
 from nltk.corpus import stopwords
 from embeddings import *
+import multiprocessing as mp
 
 
 class MMST:
@@ -358,19 +359,38 @@ sentences = ["glad i dot have taks tomorrow ! ! #thankful #startho",
     "this has gt to b da worse hangover ever i cant stop puking",
     "stomach ache i juss ate too much tonight ! ! * doris voice *"]
 
+nb = len(sentences)
+cores = mp.cpu_count()
+share = floor(nb/cores)
+
+output = np.empty(nb)
 
 # init embedder
 load = loader()
 load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
 
+def checker(sentences,pre,post):
+	g = MMST()
+	for x in range(pre,post):
+		tmp = g.input_sentence(sentences[x],load)
+		output[x] = tmp
+		
+pool = mp.Pool(cores)
+
+for i in range(nb):
+	pre = i*share
+	post = min(pre+share,nb)
+	pool.apply(checker,args=(sentences,pre,post))
+	
+pool.close()
 
 # feed sentences
-for sentence in sentences:
-    print("--------------------------------")
-    print('Sentence:')
+#for sentence in sentences:
+#    print("--------------------------------")
+#    print('Sentence:')
 
-    print(sentence)
+#    print(sentence)
 
     # init graph
-    g = MMST()
-    print(g.input_sentence(sentence, load))
+#    g = MMST()
+#    print(g.input_sentence(sentence, load))
