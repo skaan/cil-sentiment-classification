@@ -68,6 +68,9 @@ class MMST:
             self.candset_borders.append(len(words))
             self.surviving_candidates.append([*range(self.candset_borders[-2], self.candset_borders[-1])])
 
+        if self.candsets <= 1:
+            return sentence
+
 
         for i, word in enumerate(words):
             self.node_to_word[i] = word
@@ -349,10 +352,10 @@ class MMST:
 
 
 
-# Driver code
-
+#
 # input sentences
 sentences = []
+
 
 with open("../data/raw/part_train_neg.txt", "r") as f:
 	for line in f:
@@ -384,6 +387,7 @@ def checker(pre, post, id):
     g = MMST()
     #with open("output.txt", "w+") as f:
     for x in range(pre,post):
+      print(sentences[x])
       tmp = g.input_sentence(sentences[x], load, verbose=False)
       #f.write()
       #lock = threading.Lock()
