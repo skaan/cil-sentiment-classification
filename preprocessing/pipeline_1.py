@@ -11,7 +11,7 @@ Pipeline:
 import os
 
 from hashtag_split_ww import HashtagSplitWW
-from emoticon_replace import EmoticonReplace
+# from emoticon_replace import EmoticonReplace
 from appos_remove import ApposRemove
 #from stopwords_remove import StopwordsRemove
 #from spelling_correction import SpellingCorrection
@@ -19,7 +19,7 @@ from normalize import Normalize
 from wordnet_lemma import WordNetLemma
 
 
-class Pipeline1:
+class Pipeline:
 
     '''
     Give an array of input and output paths.
@@ -30,7 +30,7 @@ class Pipeline1:
     def process(self, input_paths, output_paths):
         # Init steps
         hs = HashtagSplitWW()
-        er = EmoticonReplace()
+        # er = EmoticonReplace()
         ar = ApposRemove()
         #sc = SpellingCorrection()
         nr = Normalize()
@@ -52,8 +52,8 @@ class Pipeline1:
 
             # set paths
             hs.set_paths(path_0, path_1)
-            er.set_paths(path_1, path_2)
-            ar.set_paths(path_2, path_3)
+            # er.set_paths(path_1, path_2)
+            ar.set_paths(path_1, path_3)
             #sr.set_paths(path_3, path_4)
             #sc.set_paths(path_4, path_5)
             nr.set_paths(path_3, path_4)
@@ -61,7 +61,7 @@ class Pipeline1:
 
             # run
             hs.run()
-            er.run()
+            # er.run()
             ar.run()
             #sr.run()
             #sc.run()

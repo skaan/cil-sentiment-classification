@@ -5,7 +5,7 @@ import csv
 file_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(file_path, '../preprocessing'))
 from remove_id import RemoveId
-from pipeline_1 import Pipeline1
+from pipeline_1 import Pipeline
 
 
 input_path = os.path.join(file_path, '../data/test_data.txt')
@@ -19,7 +19,7 @@ ri.set_paths(input_path, pipeline_path)
 ri.run()
 
 # run pipeline1
-prep = Pipeline1()
+prep = Pipeline()
 prep.process([pipeline_path], [prep_path])
 
 
