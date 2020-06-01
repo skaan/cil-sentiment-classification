@@ -6,6 +6,8 @@ from nltk.corpus import stopwords as wn
 from embeddings import *
 import threading
 import multiprocessing as mp
+from dict import Dict
+#from preprocessing_interface import PreprocessingInterface
 
 
 class MMST:
@@ -23,7 +25,12 @@ class MMST:
         self.sorted_edges = []
 
         self.node_to_word = {}
-
+        
+        #dict
+        self.stop_words = set(wn.words('english'))
+        self.stop_words.add('<user>')
+        self.stop_words.add('<url>')
+        self.d = enchant.Dict("en_US")
 
     '''spelling correction'''
     def input_sentence(self, sentence, embedder, prior=None, verbose=True):
@@ -36,10 +43,10 @@ class MMST:
         candidates = []
         if verbose: print('\nCandidates:')
         for word in sentence.split():
-            if d.check(word) and not word in stop_words and len(word) > 1:
+            if self.d.check(word) and not word in self.stop_words and len(word) > 1:
                 correct.append(word)
-            elif not d.check(word) and len(word) > 1:
-                candidates.append([w.lower() for w in d.suggest(word)])
+            elif not self.d.check(word) and len(word) > 1:
+                candidates.append([w.lower() for w in self.d.suggest(word)])
                 if verbose:
                     print(word, end=': ')
                     print(candidates[-1])
@@ -61,7 +68,7 @@ class MMST:
         self.candsets = 0
 
         for c in candidates:
-            embs_c, words_c = load.get_emedding(c)
+            embs_c, words_c = self.load.get_emedding(c)
             embs += embs_c
             words += words_c
             if len(words_c) > 0: self.candsets + 1
@@ -90,9 +97,9 @@ class MMST:
         word_pos = 1
         corr_sent = ""
         for word in sentence.split():
-            if word in stop_words or len(word) <= 1:
+            if word in self.stop_words or len(word) <= 1:
                 corr_sent += word + " "
-            elif d.check(word) or not word in words:
+            elif self.d.check(word) or not word in words:
                 corr_sent += word + " "
             else:
                 # search for chosen candidate
@@ -346,12 +353,6 @@ class MMST:
                 cand_selected += 1
 
 
-
-
-
-
-
-
 #
 # input sentences
 sentences = []
@@ -401,7 +402,7 @@ def checker(pre, post, id):
 #tp.start()
 #tp.join()
 
-ts = [threading.Thread(target=checker, args=(i*share, min((i+1)*share,nb), i,)) for i in range(nb)]
+ts = [threading.Thread(target=checker, args=(i*share, min((i+1)*share,nb), i,)) for i in range(cores)]
 
 for t in ts:
 	t.start()
