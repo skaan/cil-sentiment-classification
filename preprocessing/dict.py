@@ -9,6 +9,7 @@ import json
 import nltk.collocations
 import collections
 import nltk
+from nltk.corpus import stopwords
 
 class Dict:
 
@@ -145,6 +146,12 @@ class Dict:
             dict = json.loads(file.read())
 
         return dict
+
+    def get_stopwords(self):
+        stop_words = set(stopwords.words('english'))
+        stop_words.add('<user>')
+        stop_words.add('<url>')
+        return stop_words
 
 
     def get_bigrams(self):

@@ -17,6 +17,8 @@ from appos_remove import ApposRemove
 #from spelling_correction import SpellingCorrection
 from normalize import Normalize
 from wordnet_lemma import WordNetLemma
+from mst_manager.py import Manager
+from mst_def import MMST
 
 
 class Pipeline:
@@ -36,6 +38,7 @@ class Pipeline:
         nr = Normalize()
         #sr = StopwordsRemove()
         wl = WordNetLemma()
+        mg = Manager()
 
         # execute pipeline
         for input_path, output_path in zip(input_paths, output_paths):
