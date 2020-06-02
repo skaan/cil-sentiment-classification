@@ -6,6 +6,10 @@ class BaseModel(ABC):
     print("abstract init")
 
   @abstractmethod
+  def build(self, data):
+    pass
+
+  @abstractmethod
   def fit(self, data):
     pass
 
