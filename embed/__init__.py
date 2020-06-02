@@ -1,0 +1,1 @@
+from sequence_vectorize import sequence_vectorize

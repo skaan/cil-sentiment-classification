@@ -28,6 +28,10 @@ pip install textblob
 ```
 Text Blob needs nltk and nltk.download('punkt')
 
+#### Installing the Enchant C library for `pyenchant'
+
+See [docs](https://pyenchant.github.io/pyenchant/install.html#installing-the-enchant-c-library)
+
 ### Models
 Install the following if you want to use BERT:
 ```
