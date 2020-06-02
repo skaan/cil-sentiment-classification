@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from scipy import spatial
 import matplotlib
@@ -6,7 +8,7 @@ from sklearn.manifold import TSNE
 from math import sqrt, pow
 
 
-class loader():
+class Loader:
 
 	def get_emedding(self, words):
 		vectors = []
@@ -39,9 +41,10 @@ class loader():
 
 				print(words[i] + ' ' + words[j] + ' ' + str(dist))
 
-	def loadGloveModel(self,File):
+	def loadGloveModel(self):
 		print("loading glove model")
-		f = open(File,'r')
+		file_path = os.path.dirname(os.path.abspath(__file__))
+		f = open(os.path.join(file_path,'glove/glove.twitter.27B.25d.txt'),'r')
 		gloveModel = {}
 		for line in f:
 			splitLines = line.split()

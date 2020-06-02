@@ -13,7 +13,7 @@ import os
 class Normalize(PreprocessingInterface):
 
     def is_word(self, string):
-        return self.en_dict.check(string) or string in self.slang_dict
+        return self.en_dict.check(string) or string in self.slang_dict or string in self.emoticon_dict
 
 
     def get_norm_string(self, substrings, ind):
@@ -52,6 +52,7 @@ class Normalize(PreprocessingInterface):
         self.en_dict = enchant.Dict("en_US")
         d = Dict()
         self.slang_dict = d.get_slang()
+        self.emoticon_dict = d.get_emoticon()
 
         # normalize words
         output = open(self.output, 'w+')

@@ -103,6 +103,9 @@ class ApposRemove(PreprocessingInterface):
                         "needn't": "need not"
                     }
 
+        for appo in list(self.dict):
+            self.dict[appo.replace("'", "")] = self.dict[appo]
+
 
     def print_dict(self):
         print("dict size: " + str(len(self.dict)))
