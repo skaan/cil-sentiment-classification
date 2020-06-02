@@ -1,16 +1,14 @@
 from collections import defaultdict
-from math import sqrt, floor
+from math import floor
+
 import enchant
-from enchant.checker import SpellChecker
-from nltk.corpus import stopwords as wn
 from embeddings import *
-import threading
-import multiprocessing as mp
+
 
 
 class MMST:
 
-    def __init__(self, vertices=0, popularity_fac=0, max_dist_fac=-1):
+    def __init__(self, d, slang_dict, stopwords, emoji_dict, vertices=0, popularity_fac=0, max_dist_fac=-1):
         self.V = vertices
         self.adj_graph = [[] for i in range(vertices)]
         self.adj_mst = [[] for i in range(vertices)]
@@ -24,29 +22,60 @@ class MMST:
 
         self.node_to_word = {}
 
+        #dicts
+        self.d = d
+        self.slang_dict = slang_dict
+        self.stop_words = stopwords
+        self.emoji_dict = emoji_dict
+
 
     '''spelling correction'''
-    def input_sentence(self, sentence, embedder, prior=None, verbose=True):
-        # @Phil: Do not translate this function.
-        # We will call cpp functions from here.
+    def isword(self, word):
+        return self.d.check(word) or self.d.check(word.capitalize()) or word in self.slang_dict or word in self.emoji_dict
 
 
+    def input_sentence(self, sentence, embedder, prior=None, verbose=False):
         # remove stopwords, split into correct and misspelled
+
+        # for each word in sentence:
+
         correct = []
+        misspelled = []
         candidates = []
+        split_words = {}
+
+
         if verbose: print('\nCandidates:')
-        for word in sentence.split():
-            if d.check(word) and not word in stop_words and len(word) > 1:
-                correct.append(word)
-            elif not d.check(word) and len(word) > 1:
-                candidates.append([w.lower() for w in d.suggest(word)])
-                if verbose:
-                    print(word, end=': ')
-                    print(candidates[-1])
+
+        # get candidates for graph: Correct and enchant suggestions
+        for i, word in enumerate(sentence.split()):
+
+            if not word in self.stop_words and len(word) > 1:
+                if self.isword(word):
+                    correct.append(word)
+                else:
+                    # get enchant suggestions
+                    candset = []
+                    for w in self.d.suggest(word):
+                        ws = [w_c.lower() for w_c in w.split()]
+                        if len(ws) > 1:
+                            split_words[(word, ws[0])] = w
+                            split_words[(word, ws[1])] = w
+
+                        candset += ws
+
+                    candidates.append(candset)
+                    misspelled.append(word)
+
+                    if verbose:
+                        print(word, end=': ')
+                        print(candidates[-1])
+
 
 
         # get priors
         # TODO
+
 
 
         # convert words to embeddings
@@ -58,15 +87,26 @@ class MMST:
         embs, words = embedder.get_emedding(correct)
         self.correct = len(words)
         self.candset_borders = [len(words)]
+
+        cands_in_graph = [[]]*len(sentence.split())
+
+        mis_idx = 0
         self.candsets = 0
 
-        for c in candidates:
-            embs_c, words_c = load.get_emedding(c)
+        for i, c in enumerate(candidates):
+            embs_c, words_c = embedder.get_emedding(c)
             embs += embs_c
+
             words += words_c
-            if len(words_c) > 0: self.candsets + 1
+            if len(words_c) > 0: self.candsets += 1
             self.candset_borders.append(len(words))
             self.surviving_candidates.append([*range(self.candset_borders[-2], self.candset_borders[-1])])
+
+            # keep track which nodes to which word in sentence
+            while sentence.split()[mis_idx] != misspelled[i]:
+                mis_idx += 1
+            cands_in_graph[mis_idx] = [*range(self.candset_borders[-2], self.candset_borders[-1])]
+
 
         if self.candsets <= 1:
             return sentence
@@ -80,30 +120,28 @@ class MMST:
             print(words, end='\n\n')
 
 
-        # do MST NOTE: These two functions will be cpp
+        # do MST
         self.build_graph_from_embs(embs)
         self.build_mmst()
 
 
         # replace mst words in sentence
-        mst_pos = 0
-        word_pos = 1
         corr_sent = ""
-        for word in sentence.split():
-            if word in stop_words or len(word) <= 1:
-                corr_sent += word + " "
-            elif d.check(word) or not word in words:
+
+        for i, word in enumerate(sentence.split()):
+            if len(cands_in_graph[i]) == 0:
                 corr_sent += word + " "
             else:
-                # search for chosen candidate
-                for i in range(self.candset_borders[word_pos-1], self.candset_borders[word_pos]):
-                    if len(self.adj_mst[i]) > 0:
-                        corr_sent += self.node_to_word.get(i) + " "
+                for node in cands_in_graph[i]:
+                    if len(self.adj_mst[node]) > 0:
+                        correction = self.node_to_word.get(node)
+                        if (word, correction) in split_words:
+                            correction = split_words[(word, correction)]
                         break
 
-                word_pos += 1
+                corr_sent += correction + " "
 
-        return corr_sent
+        return corr_sent + "\n"
 
 
 
@@ -345,77 +383,38 @@ class MMST:
             else:
                 cand_selected += 1
 
+'''
+# driver code
+
+from embeddings import Loader
+import enchant
+import sys
 
 
+file_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(file_path, '../preprocessing'))
+from dict import Dict
 
 
-
-
-
-#
-# input sentences
-sentences = []
-
-
-with open("../data/raw/part_train_neg.txt", "r") as f:
-	for line in f:
-		sentences.append(line)
-
-
-nb = len(sentences)
-cores = mp.cpu_count()
-share = floor(nb/cores)
-
-#np.empty(nb)
-#wn.ensure_loaded()            # first access to wn transforms it
-
-stop_words = set(wn.words('english'))
-stop_words.add('<user>')
-stop_words.add('<url>')
+dict = Dict()
+slang_dict = dict.get_slang()
+stop_words = dict.get_stopwords()
+emoji_dict = dict.get_emoticon()
 d = enchant.Dict("en_US")
 
+l = Loader()
+l.loadGloveModel()
+g = MMST(d, slang_dict, stop_words, emoji_dict)
 
-output = [""]*nb
-# init embedder
-load = loader()
-load.loadGloveModel('glove/glove.twitter.27B.25d.txt')
-
-def checker(pre, post, id):
-    #print(id)
-    global output
-    global sentences
-    g = MMST()
-    #with open("output.txt", "w+") as f:
-    for x in range(pre,post):
-      print(sentences[x])
-      tmp = g.input_sentence(sentences[x], load, verbose=False)
-      #f.write()
-      #lock = threading.Lock()
-      output[x] = tmp
-      #print(output[x])
-      #threading.Release()
-
-#executor = ThreadPoolExecutor(cores)
-
-#tp = threading.Thread(target=checker, args=(0, 2, 1,))
-#tp.start()
-#tp.join()
-
-ts = [threading.Thread(target=checker, args=(i*share, min((i+1)*share,nb), i,)) for i in range(nb)]
-
-for t in ts:
-	t.start()
-for t in ts:
-	t.join()
-#pool.close()
+sentences = ["maxpedition 4.5- inch clip-on phone holster ( khaki great for small two-way radios , treo , iphone , palm , blackber ... <url>",
+"i was jezt thinkin bout ma daddy in tears rite now",
+"top stories spain's king apologizes for hunting trip ( cn share with friends : | | top news - top stories sto ... <url>",
+"i was not in the movie tho .. rt <user> inda movie think like a man deres way 2 many sexy men smh i almost jumpd inda movie ! ",
+"seriously everyday on the way to school i see someone who drives the same car as suzanna & anna . makes me sad "]
 
 
-#executor.shutdown
-
-print(output)
-#final = open("final_output.txt", 'w+')
-#for i in range(nb):
-#    with open("mst_corr_" + str(i) + ".txt", "w+") as f:
-#        for line in f:
-#            print(line)
-#            final.write(line)
+for sent in sentences:
+    print(sent)
+    print(g.input_sentence(sent, l, verbose=True))
+    print()
+'''
