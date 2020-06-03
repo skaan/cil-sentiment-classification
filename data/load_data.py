@@ -2,26 +2,35 @@ import os
 import os
 import sys
 import random
-import numpy as np
 
 file_path = os.path.dirname(os.path.abspath(__file__))
+get_prep_path = lambda file: os.path.join(file_path, f"./preprocessed/{file}")
 
-def load_train_data(seed = 0):
+def load_train_data(is_full=True, seed = 0):
   # Gather data
-  output_path_pos = os.path.join(file_path, './preprocessed/test_data_prep_pos.txt')
-  output_path_neg = os.path.join(file_path, './preprocessed/test_data_prep_neg.txt')
+  full_train_pos_path = get_prep_path("train_pos_full.txt")
+  full_train_neg_path = get_prep_path("train_neg_full.txt")
+  part_train_pos_path = get_prep_path("part_train_pos.txt")
+  part_train_neg_path = get_prep_path("part_train_neg.txt")
 
   # Load the preprocessed training data
   features = []
   labels = []
 
-  with open(output_path_pos) as f:
+  if is_full:
+    pos_path = full_train_pos_path
+    neg_path = full_train_neg_path
+  else:
+    pos_path = part_train_pos_path
+    neg_path = part_train_neg_path
+
+  with open(pos_path) as f:
     for line in f:
       line = line.strip()
       features.append(line)
       labels.append(1)
 
-  with open(output_path_neg) as f:
+  with open(neg_path) as f:
     for line in f:
       line = line.strip()
       features.append(line)
@@ -33,5 +42,16 @@ def load_train_data(seed = 0):
 
   return features, labels
 
+
 def load_test_data():
-  print("load test data")
+  test_path = get_prep_path("test_prep.txt")
+
+  # Load the preprocessed test data
+  features = []
+
+  with open(test_path) as f:
+    for line in f:
+      line = line.strip()
+      features.append(line)
+
+  return features

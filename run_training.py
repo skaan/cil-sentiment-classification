@@ -2,7 +2,7 @@ import sys
 import os
 import numpy as np
 
-sys.path.append('./Model')
+sys.path.append('./model')
 sys.path.append('./data')
 sys.path.append('./embed')
 
@@ -15,7 +15,6 @@ texts, labels = data.load_train_data()
 # create empedding
 input, word_index = embed.sequence_vectorize(texts)
 labels = np.array(labels)
-print(type(input), type(labels))
 
 # create model
 model = RNNModel()

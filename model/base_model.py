@@ -2,17 +2,14 @@ from abc import ABC, abstractmethod
 
 class BaseModel(ABC):
 
-  def __init__(self):
-    print("abstract init")
-
   @abstractmethod
-  def build(self, data):
+  def build(self):
     pass
 
   @abstractmethod
-  def fit(self, data):
+  def fit(self, input):
     pass
 
   @abstractmethod
-  def predict(self, data):
+  def predict(self, input):
     pass

@@ -1,21 +1,50 @@
-import os
 import sys
 
-file_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(file_path, './preprocessing'))
-from pipeline_1 import Pipeline
+sys.path.append('./preprocessing')
+from pipeline1 import Pipeline
+from remove_id import RemoveId
 
+# Setup path helpers and file paths
+get_raw_path = lambda file : f"./data/raw/{file}"
+get_prep_path = lambda file: f"./data/preprocessed/{file}"
 
-# Setup file paths
-input_path_pos = os.path.join(file_path, './data/raw/part_train_pos.txt')
-input_path_neg = os.path.join(file_path, './data/raw/part_train_pos.txt')
-output_path_pos = os.path.join(file_path, './data/preprocessed/test_data_prep_pos.txt')
-output_path_neg = os.path.join(file_path, './data/preprocessed/test_data_prep_neg.txt')
+# TODO: Convert path data structure to dict
+input_full_train_pos_path = get_raw_path("train_pos_full.txt")
+input_full_train_neg_path = get_raw_path("train_neg_full.txt")
+input_part_train_pos_path = get_raw_path("part_train_pos.txt")
+input_part_train_neg_path = get_raw_path("part_train_neg.txt")
+input_test_path = get_raw_path("test_data.txt")
 
+output_full_train_pos_path = get_prep_path("train_pos_full.txt")
+output_full_train_neg_path = get_prep_path("train_neg_full.txt")
+output_part_train_pos_path = get_prep_path("part_train_pos.txt")
+output_part_train_neg_path = get_prep_path("part_train_neg.txt")
+output_test_path_noid = get_prep_path("test_prep_noid.txt")
+output_test_path = get_prep_path("test_prep.txt")
+
+def run_preprocessing(is_train=False, is_full=True):
+  preprocessing = Pipeline()
+
+  if is_train and is_full:
+    preprocessing.process(
+      [ input_full_train_pos_path, input_full_train_neg_path ],
+      [ output_full_train_pos_path, output_full_train_neg_path ]
+    )
+  elif is_train and not is_full:
+    preprocessing.process(
+      [ input_part_train_pos_path, input_part_train_neg_path ],
+      [ output_part_train_pos_path, output_part_train_neg_path ]
+    )
+  else:
+    ri = RemoveId()
+    ri.set_paths(input_test_path, output_test_path_noid)
+    ri.run()
+
+    preprocessing.process(
+      [ output_test_path_noid ],
+      [ output_test_path ]
+    )
 
 # Preprocess
-preprocessing = Pipeline()
-preprocessing.process(
-  [ input_path_pos, input_path_neg ], 
-  [ output_path_pos, output_path_neg ]
-)
+if __name__ == '__main__':
+  run_preprocessing(True, False)
