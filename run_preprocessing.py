@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append('./preprocessing')
-from pipeline1 import Pipeline
+from pipeline_mst import PipelineMST
 from remove_id import RemoveId
 
 # Setup path helpers and file paths
@@ -23,7 +23,7 @@ output_test_path_noid = get_prep_path("test_prep_noid.txt")
 output_test_path = get_prep_path("test_prep.txt")
 
 def run_preprocessing(is_train=False, is_full=True):
-  preprocessing = Pipeline()
+  preprocessing = PipelineMST()
 
   if is_train and is_full:
     preprocessing.process(

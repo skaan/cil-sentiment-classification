@@ -6,13 +6,9 @@ import numpy as np
 checkpoint_path = "checkpoints/rnn/weights.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
-TOP_K = 20000
-
 class RNNModel(BaseModel):
 
-  def build(self, word_index):
-    num_features = min(len(word_index) + 1, TOP_K)
-
+  def build(self, num_features):
     # create model
     self.model = tf.keras.Sequential([
       tf.keras.layers.Embedding(num_features, 64),

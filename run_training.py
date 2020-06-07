@@ -10,17 +10,25 @@ import data
 import embed
 from rnn_model import RNNModel
 
-texts, labels = data.load_train_data()
+TOP_K = 20000
 
-# create empedding
-input, word_index = embed.sequence_vectorize(texts)
-labels = np.array(labels)
+def run_training():
+  texts, labels = data.load_train_data()
 
-# create model
-model = RNNModel()
+  # create empedding
+  input, word_index = embed.sequence_vectorize(texts)
+  labels = np.array(labels)
 
-# pipeline
-model.build(word_index)
+  # create model
+  model = RNNModel()
 
-model.fit(input, labels)
-model.save('saved_models/rnn_model')
+  # pipeline
+  num_features = min(len(word_index) + 1, TOP_K)
+  model.build(num_features, input_shape=input.shape[1:])
+
+  model.fit(input, labels)
+  model.save('saved_models/rnn_model')
+
+# Predict
+if __name__ == '__main__':
+  run_training()

@@ -63,11 +63,12 @@ class PipelineMST:
 
 
 # driver code
-pmst = PipelineMST()
-file_path = os.path.dirname(os.path.abspath(__file__))
-data_folder = os.path.join(file_path, '../data/raw')
-inp_neg = os.path.join(data_folder, 'train_neg_full.txt')
-inp_pos = os.path.join(data_folder, 'train_pos_full.txt')
-out_neg = os.path.join(data_folder, '../mst_first/train_neg.txt')
-out_pos = os.path.join(data_folder, '../mst_first/train_pos.txt')
-pmst.process([inp_neg, inp_pos], [out_neg, out_pos])
+if __name__ == '__main__':
+    pmst = PipelineMST()
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    data_folder = os.path.join(file_path, '../data/raw')
+    inp_neg = os.path.join(data_folder, 'train_neg_full.txt')
+    inp_pos = os.path.join(data_folder, 'train_pos_full.txt')
+    out_neg = os.path.join(data_folder, '../mst_first/train_neg.txt')
+    out_pos = os.path.join(data_folder, '../mst_first/train_pos.txt')
+    pmst.process([inp_neg, inp_pos], [out_neg, out_pos])
