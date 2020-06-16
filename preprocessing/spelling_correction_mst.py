@@ -42,6 +42,16 @@ class SpellingCorrectionMST(PreprocessingInterface):
                 f.write(sentences[j])
 
 
+    def merge_outputs(self):
+        out = open(self.output, "w+")
+        for i in range(self.cores):
+            with open(self.output + '_' + str(i), "r") as f:
+                for line in f:
+                    out.write(line)
+
+            #os.remove(self.input + '_' + str(i))
+
+
     def checker(self, id, d, slang_dict, stop_words, emoji_dict):
         g = MMST(d, slang_dict, stop_words, emoji_dict)
         input = open(self.input + '_' + str(id), "r")
@@ -51,7 +61,7 @@ class SpellingCorrectionMST(PreprocessingInterface):
                     tmp = g.input_sentence(line, self.load, verbose=False)
                     f.write(tmp)
                 except IndexError:
-                    print(line)
+                    print("error " + line)
 
     def run(self):
         super().run()
@@ -73,3 +83,15 @@ class SpellingCorrectionMST(PreprocessingInterface):
             t.start()
         for t in ts:
             t.join()
+
+        self.merge_outputs()
+
+
+
+'''
+sc = SpellingCorrectionMST()
+sc.input = "../data/mst_first/train_pos_mst_3.txt"
+sc.output = "../data/mst_first/train_pos.txt"
+
+sc.merge_outputs()
+'''

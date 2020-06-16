@@ -54,8 +54,9 @@ class MMST:
                 if self.isword(word):
                     correct.append(word)
                 else:
+
                     # get enchant suggestions
-                    candset = []
+                    candset = [word]
                     for w in self.d.suggest(word):
                         ws = [w_c.lower() for w_c in w.split()]
                         if len(ws) > 1:
@@ -84,14 +85,16 @@ class MMST:
         node_count = 0
         self.surviving_candidates = []
 
+        self.candsets = 0
+
         embs, words = embedder.get_emedding(correct)
+        #if len(words) > 0: self.candsets += 1
         self.correct = len(words)
         self.candset_borders = [len(words)]
 
         cands_in_graph = [[]]*len(sentence.split())
 
         mis_idx = 0
-        self.candsets = 0
 
         for i, c in enumerate(candidates):
             embs_c, words_c = embedder.get_emedding(c)
@@ -108,7 +111,8 @@ class MMST:
             cands_in_graph[mis_idx] = [*range(self.candset_borders[-2], self.candset_borders[-1])]
 
 
-        if self.candsets <= 1:
+        if (self.candsets <= 1 and self.correct == 0) or self.candsets == 0:
+            # TODO: Prior score
             return sentence
 
 
@@ -214,6 +218,10 @@ class MMST:
             if len(adj) > 0:
                 print(self.node_to_word.get(i), end=', ')
         print()
+
+    def print_word_node(self):
+        for i in self.node_to_word:
+            print("{}: {}".format(i, self.node_to_word[i]))
 
 
 
@@ -368,13 +376,19 @@ class MMST:
         deletable = [*range(self.correct, self.V)]
         self.get_node_costs(deletable)
 
+        #self.print_word_node()
+
         # always delete cheapest node that deletable.
         cand_selected = 0
+        #if self.correct >= 1: cand_selected += 1
         while cand_selected < self.candsets:
+            #print("{} < {}".format(cand_selected, self.candsets))
+            #print(self.del_cost)
             del_node, _ = self.del_cost.pop(0)
             deletable.remove(del_node)
 
             surv_cands = self.get_surviving_candidates(del_node)
+            #print(surv_cands)
             if len(surv_cands) > 1:
                 # delete
                 self.reconnect(del_node, change_graph=True)
@@ -382,6 +396,7 @@ class MMST:
                 surv_cands.remove(del_node)
             else:
                 cand_selected += 1
+
 
 '''
 # driver code
@@ -406,11 +421,7 @@ l = Loader()
 l.loadGloveModel()
 g = MMST(d, slang_dict, stop_words, emoji_dict)
 
-sentences = ["maxpedition 4.5- inch clip-on phone holster ( khaki great for small two-way radios , treo , iphone , palm , blackber ... <url>",
-"i was jezt thinkin bout ma daddy in tears rite now",
-"top stories spain's king apologizes for hunting trip ( cn share with friends : | | top news - top stories sto ... <url>",
-"i was not in the movie tho .. rt <user> inda movie think like a man deres way 2 many sexy men smh i almost jumpd inda movie ! ",
-"seriously everyday on the way to school i see someone who drives the same car as suzanna & anna . makes me sad "]
+sentences = ["ls olivia said shut the he will up you arepretty yesterday"]
 
 
 for sent in sentences:
