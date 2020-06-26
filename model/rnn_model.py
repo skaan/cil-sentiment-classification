@@ -3,6 +3,8 @@ import tensorflow as tf
 import os
 import numpy as np
 
+from custom_callback import CustomCallback
+
 checkpoint_path = "checkpoints/rnn/weights.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
@@ -25,13 +27,14 @@ class RNNModel(BaseModel):
     )
 
 
-  def fit(self, input, labels, epochs=50):
+  def fit(self, input, labels, epochs=3, batch_size=512):
     self.model.fit(
       input,
       labels,
       epochs=epochs,
-      #callbacks=callbacks,
+      batch_size=batch_size,
       validation_split=0.1,
+      callbacks=[CustomCallback()],
       verbose=2, 
     )
 

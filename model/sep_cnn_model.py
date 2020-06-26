@@ -11,6 +11,8 @@ from tensorflow.python.keras.layers import SeparableConv1D
 from tensorflow.python.keras.layers import MaxPooling1D
 from tensorflow.python.keras.layers import GlobalAveragePooling1D
 
+from custom_callback import CustomCallback
+
 checkpoint_path = "checkpoints/rnn/weights.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
@@ -76,12 +78,14 @@ class SepCNNModel(BaseModel):
     )
 
 
-  def fit(self, input, labels, epochs=50):
+  def fit(self, input, labels, epochs=3, batch_size=512):
     self.model.fit(
       input,
       labels,
       epochs=epochs,
+      batch_size=batch_size
       validation_split=0.1,
+      callbacks=[CustomCallback()],
       verbose=2, 
     )
 
