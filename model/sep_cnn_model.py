@@ -37,36 +37,36 @@ class SepCNNModel(BaseModel):
         input_length=input_shape[0]))
 
     for _ in range(blocks-1):
-      model.add(Dropout(rate=dropout_rate))
-      model.add(SeparableConv1D(filters=filters,
+      self.model.add(Dropout(rate=dropout_rate))
+      self.model.add(SeparableConv1D(filters=filters,
                                 kernel_size=kernel_size,
                                 activation='relu',
                                 bias_initializer='random_uniform',
                                 depthwise_initializer='random_uniform',
                                 padding='same'))
-      model.add(SeparableConv1D(filters=filters,
+      self.model.add(SeparableConv1D(filters=filters,
                                 kernel_size=kernel_size,
                                 activation='relu',
                                 bias_initializer='random_uniform',
                                 depthwise_initializer='random_uniform',
                                 padding='same'))
-      model.add(MaxPooling1D(pool_size=pool_size))
+      self.model.add(MaxPooling1D(pool_size=pool_size))
 
-    model.add(SeparableConv1D(filters=filters * 2,
+    self.model.add(SeparableConv1D(filters=filters * 2,
                               kernel_size=kernel_size,
                               activation='relu',
                               bias_initializer='random_uniform',
                               depthwise_initializer='random_uniform',
                               padding='same'))
-    model.add(SeparableConv1D(filters=filters * 2,
+    self.model.add(SeparableConv1D(filters=filters * 2,
                               kernel_size=kernel_size,
                               activation='relu',
                               bias_initializer='random_uniform',
                               depthwise_initializer='random_uniform',
                               padding='same'))
-    model.add(GlobalAveragePooling1D())
-    model.add(Dropout(rate=dropout_rate))
-    model.add(Dense(2, activation='sigmoid'))
+    self.model.add(GlobalAveragePooling1D())
+    self.model.add(Dropout(rate=dropout_rate))
+    self.model.add(Dense(2, activation='sigmoid'))
 
     # compile model with loss and optimizer
     self.model.compile(

@@ -20,7 +20,7 @@ def run_training():
   labels = np.array(labels)
 
   # create model
-  model = RNNModel()
+  model = SepCNNModel()
 
   # pipeline
   num_features = min(len(word_index) + 1, TOP_K)
