@@ -16,7 +16,7 @@ checkpoint_dir = os.path.dirname(checkpoint_path)
 
 TOP_K = 20000
 
-class RNNModel(BaseModel):
+class SepCNNModel(BaseModel):
 
   def build(
       self,

@@ -8,7 +8,7 @@ sys.path.append('./embed')
 
 import data
 import embed
-from rnn_model import RNNModel
+from sep_cnn_model import SepCNNModel
 
 TOP_K = 20000
 
