@@ -8,7 +8,10 @@ sys.path.append('./embed')
 
 import data
 import embed
-from rnn_model import RNNModel
+
+#from rnn_model import RNNModel
+from sep_cnn_model import SepCNNModel
+
 
 TOP_K = 20000
 
@@ -20,13 +23,13 @@ def run_training():
   labels = np.array(labels)
 
   # create model
-  model = RNNModel()
+  model = SepCNNModel()
 
   # pipeline
   num_features = min(len(word_index) + 1, TOP_K)
   model.build(num_features)
 
-  model.fit(input, labels)
+  model.fit(input[:1000], labels[:10])
   model.save('saved_models/rnn_model')
 
 # Predict
