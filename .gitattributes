@@ -10,3 +10,5 @@ data/pretrain_data/pretrain_neg.txt filter=lfs diff=lfs merge=lfs -text
 data/pretrain_data/pretrain_pos.txt filter=lfs diff=lfs merge=lfs -text
 data/no_mst/train_neg.txt filter=lfs diff=lfs merge=lfs -text
 data/no_mst/train_pos.txt filter=lfs diff=lfs merge=lfs -text
+data/emot_sl_mst/train_neg.txt filter=lfs diff=lfs merge=lfs -text
+data/emot_sl_mst/train_pos.txt filter=lfs diff=lfs merge=lfs -text

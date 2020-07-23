@@ -1,4 +1,6 @@
 from preprocessing_interface import PreprocessingInterface
+from dict import Dict
+
 
 import os
 

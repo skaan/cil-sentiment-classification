@@ -13,7 +13,7 @@ from dict import *
 class SlangReplace(PreprocessingInterface):
 
     def run(self):
-        super().run();
+        super().run()
 
         # get dicts
         eng_dict = enchant.Dict("en_US")
@@ -29,6 +29,11 @@ class SlangReplace(PreprocessingInterface):
                 for word in line.split():
                     if word in corr_word_rep or (not eng_dict.check(word) and not word[0] == '#'):
                         if word in slang_dict:
-                            output.write(slang_dict[word] + ' ')
-                        else:
-                            output.write(word + ' ')
+                            word = slang_dict[word]
+
+
+                    output.write(word + ' ')
+
+                output.write("\n")
+
+        output.close()
