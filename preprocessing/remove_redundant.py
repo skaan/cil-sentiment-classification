@@ -9,6 +9,7 @@ class RemoveRedundant(PreprocessingInterface):
         output = open(self.output, 'w+', encoding="utf8")
         with open(self.input, mode='r') as input:
             prev = next(input)
+            output.write(prev)
             for line in input:
                 if not line == prev:
                     prev = line
