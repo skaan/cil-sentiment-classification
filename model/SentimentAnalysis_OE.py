@@ -476,7 +476,7 @@ for e in range(epochs):
         loss = loss_func(predictions, labels)
         loss.backward(retain_graph=True)
         running_loss += (loss.detach()  - running_loss) / (index + 1)
-        train_accuracy += accuracy(predictions,labels) / (index + 1)
+        train_accuracy += (accuracy(predictions,labels) - train_accuracy) / (index + 1)
         index+=1
         nn.utils.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
@@ -500,7 +500,7 @@ for e in range(epochs):
 
         val_loss = loss_func(output, labels)
         running_val_loss += (val_loss.detach()  - running_val_loss) / (index + 1)
-        val_accuracy += accuracy(predictions,labels) / (index + 1)
+        val_accuracy += (accuracy(predictions,labels) - val_accuracy) / (index + 1)
         index+=1
         val_losses.append(val_loss.item())
         val_bar.set_postfix(loss=val_loss,acc=val_accuracy,epoch=e)
