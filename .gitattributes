@@ -16,3 +16,5 @@ data/enchant_prep/train_pos.txt filter=lfs diff=lfs merge=lfs -text
 data/enchant_prep/train_neg.txt filter=lfs diff=lfs merge=lfs -text
 data/cleaned/train_neg.txt filter=lfs diff=lfs merge=lfs -text
 data/cleaned/train_pos.txt filter=lfs diff=lfs merge=lfs -text
+data/only_no/train_neg.txt filter=lfs diff=lfs merge=lfs -text
+data/only_no/train_pos.txt filter=lfs diff=lfs merge=lfs -text
