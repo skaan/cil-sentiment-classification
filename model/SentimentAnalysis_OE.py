@@ -38,7 +38,7 @@ import logging
 from torch.utils.tensorboard import SummaryWriter
 
 #Create and configure logger
-logging.basicConfig(filename="checkpoint/BILSTM.log",
+logging.basicConfig(filename="checkpoint/onlyBILSTM.log",
                     format='%(asctime)s %(message)s',
                     filemode='w')
 
@@ -48,7 +48,7 @@ logger=logging.getLogger()
 #Setting the threshold of logger to DEBUG
 logger.setLevel(logging.DEBUG)
 #%%
-writer = SummaryWriter('runs/BILSTM_train')
+writer = SummaryWriter('runs/onlyBILSTM_train')
 #%%
 ## Data Loading
 
@@ -413,14 +413,14 @@ model.train()
 
 
 #%%
-def classDefiner(x):
+def classDefiner_accuracy(x):
     if x[0] > x[1]:
-        return -1
+        return 0
     return 1
 
 def accuracy(predicted,labels):
     acc = 0
-    preds = map(classDefiner,list(predicted.cpu().detach().numpy()))
+    preds = map(classDefiner_accuracy,list(predicted.cpu().detach().numpy()))
     labels = list(labels.cpu().detach().numpy())
     preds = list(preds)
     for i in range(0,len(preds)):
@@ -433,7 +433,7 @@ def accuracy(predicted,labels):
 # Model training
 
 epochs = 10
-clip=5 # gradient clipping
+clip=2 # gradient clipping
 
 epoch_bar = tqdm(desc='Epochs',total=epochs,position=0)
 train_bar = tqdm(desc='Training',total=len(train_loader),position=1,leave=True)
@@ -528,7 +528,7 @@ for e in range(epochs):
     'val_loss': running_val_loss,
     'train_acc': train_accuracy,
     'val_acc': val_accuracy,
-    }, 'checkpoint/entire_model_BiLSTM_'+str(e+1)+'.pt')
+    }, 'checkpoint/entire_model_onlyBiLSTM_'+str(e+1)+'.pt')
 
 
 valid_hidden = model.init_hidden(BATCH_SIZE)
@@ -543,7 +543,7 @@ for inputs, labels in valid_loader:
     val_predictions,valid_hidden = model(inputs,valid_hidden)
 
     op3 = val_predictions.cpu()
-    val_preds = map(classDefiner,list(op3.detach().numpy()))
+    val_preds = map(classDefiner_accuracy,list(op3.detach().numpy()))
     for item in list(val_preds):
       val_op.append(item)
 
@@ -556,6 +556,11 @@ for i in range(0,len(val_op)):
   val_df.loc[i,'predictions'] = val_op[i]
 
 val_df.to_csv('checkpoint/Misclassification.csv')
+
+def classDefiner(x):
+    if x[0] > x[1]:
+        return 0
+    return 1
 
 model.eval()
 test_hidden = model.init_hidden(100)
@@ -577,7 +582,7 @@ for inputs in test_loader:
             fp.write("{},{}\n".format(id,item))
             id+=1
 
-PATH = "checkpoint/entire_model_BiLSTM_New.pt"
+PATH = "checkpoint/entire_model_onlyBiLSTM_New.pt"
 
 # Save
 torch.save(model, PATH)
