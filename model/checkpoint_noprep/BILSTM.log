@@ -1,0 +1,40 @@
+2020-07-26 18:02:32,143 train_loss == tensor(0.3751, device='cuda:0')at epoch1
+2020-07-26 18:02:32,144 val_loss == tensor(0.3421, device='cuda:0')at epoch1
+2020-07-26 18:02:32,145 train_acc == 0.42143308772863786at epoch1
+2020-07-26 18:02:32,145 val_acc == 0.23165262898223912at epoch1
+2020-07-26 18:39:16,086 train_loss == tensor(0.3316, device='cuda:0')at epoch2
+2020-07-26 18:39:16,087 val_loss == tensor(0.3235, device='cuda:0')at epoch2
+2020-07-26 18:39:16,087 train_acc == 0.4317570980017524at epoch2
+2020-07-26 18:39:16,087 val_acc == 0.2626251057231472at epoch2
+2020-07-26 19:15:48,370 train_loss == tensor(0.3143, device='cuda:0')at epoch3
+2020-07-26 19:15:48,371 val_loss == tensor(0.3141, device='cuda:0')at epoch3
+2020-07-26 19:15:48,371 train_acc == 0.43559532385366895at epoch3
+2020-07-26 19:15:48,371 val_acc == 0.23881977727657155at epoch3
+2020-07-26 20:00:03,204 train_loss == tensor(0.3028, device='cuda:0')at epoch4
+2020-07-26 20:00:03,205 val_loss == tensor(0.3077, device='cuda:0')at epoch4
+2020-07-26 20:00:03,205 train_acc == 0.4381518573039344at epoch4
+2020-07-26 20:00:03,205 val_acc == 0.309345926134762at epoch4
+2020-07-26 20:36:37,491 train_loss == tensor(0.2936, device='cuda:0')at epoch5
+2020-07-26 20:36:37,492 val_loss == tensor(0.3016, device='cuda:0')at epoch5
+2020-07-26 20:36:37,492 train_acc == 0.4400609378915071at epoch5
+2020-07-26 20:36:37,492 val_acc == 0.2243224908373274at epoch5
+2020-07-26 21:13:02,578 train_loss == tensor(0.2857, device='cuda:0')at epoch6
+2020-07-26 21:13:02,579 val_loss == tensor(0.3019, device='cuda:0')at epoch6
+2020-07-26 21:13:02,579 train_acc == 0.4415990666499611at epoch6
+2020-07-26 21:13:02,579 val_acc == 0.2624136594305059at epoch6
+2020-07-26 21:49:36,449 train_loss == tensor(0.2787, device='cuda:0')at epoch7
+2020-07-26 21:49:36,449 val_loss == tensor(0.2973, device='cuda:0')at epoch7
+2020-07-26 21:49:36,449 train_acc == 0.4431876017915313at epoch7
+2020-07-26 21:49:36,449 val_acc == 0.2392735057795316at epoch7
+2020-07-26 22:25:58,723 train_loss == tensor(0.2723, device='cuda:0')at epoch8
+2020-07-26 22:25:58,724 val_loss == tensor(0.2972, device='cuda:0')at epoch8
+2020-07-26 22:25:58,724 train_acc == 0.44447174110498683at epoch8
+2020-07-26 22:25:58,724 val_acc == 0.27814438257682533at epoch8
+2020-07-26 23:03:08,968 train_loss == tensor(0.2664, device='cuda:0')at epoch9
+2020-07-26 23:03:08,969 val_loss == tensor(0.2981, device='cuda:0')at epoch9
+2020-07-26 23:03:08,969 train_acc == 0.44564968444625425at epoch9
+2020-07-26 23:03:08,969 val_acc == 0.23979331124894226at epoch9
+2020-07-26 23:39:35,943 train_loss == tensor(0.2610, device='cuda:0')at epoch10
+2020-07-26 23:39:35,943 val_loss == tensor(0.2970, device='cuda:0')at epoch10
+2020-07-26 23:39:35,944 train_acc == 0.44679728608118496at epoch10
+2020-07-26 23:39:35,944 val_acc == 0.20906752184945046at epoch10
