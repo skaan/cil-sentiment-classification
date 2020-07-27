@@ -1,0 +1,22 @@
+Preprocessing methods/requirements used in our final pipeline
+
+-hashtag_split_ww.py [install wordsegment]
+
+transform #tosplit into words without hashtag
+
+-normalize.py [install enchant]
+
+delete repeated letters : 'llooooooovvvee' -> 'love'
+
+-spelling_correction_mst.py [install enchant]
+
+corrects wrongly spelled words using a MST with spellcheck correction offers made by enchant
+
+-emoticon_replace.py
+
+replaces a smiley by its corresponding emotion
+
+-slang_replace.py
+
+replaces a slang word by its full meaning, e.g. : "aamof": "as a matter of fact"
+
