@@ -1,0 +1,27 @@
+// all requirements for preprocessing
+
+-BeautifulSoup
+
+$ pip install beautifulsoup4
+
+-NLTK
+
+$ pip install -U nltk
+
+-wordsegment
+
+$ pip install wordsegment
+
+-enchant
+
+$ pip install pyenchant
+
+-spellchecker
+
+$ pip install pyspellchecker
+
+-textblob
+
+$ pip install -U textblob
+
+
