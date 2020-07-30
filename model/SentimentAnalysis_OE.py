@@ -409,6 +409,7 @@ loss_func = nn.NLLLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learningrate)
 loss_func.to(Device)
 my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=0.9)
+#model = model.load_state_dict(torch.load(PATH)['model_state_dict'])
 model.train()
 
 
