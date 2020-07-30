@@ -98,11 +98,11 @@ class SentimentRNN_WBERT(nn.Module):
     The RNN model that will be used to perform Sentiment analysis.
     """
 
-    def _init_(self, embedding_dim , hidden_dim, output_size, batch_size, n_layers, drop_prob=0.5,Device=True):
+    def __init__(self, embedding_dim , hidden_dim, output_size, batch_size, n_layers, drop_prob=0.5,Device=True):
         """
         Initialize the model by setting up the layers.
         """
-        super(SentimentRNN_WBERT, self)._init_()
+        super(SentimentRNN_WBERT, self).__init__()
         self.device = Device
         self.output_size = output_size
         self.n_layers = n_layers
@@ -114,11 +114,11 @@ class SentimentRNN_WBERT(nn.Module):
         self.embedding = BertModel.from_pretrained('bert-base-uncased')
 
         print('true')
-        # for param in nn.Sequential(*list(self.embedding.children())[:-2]).parameters():
-        #     param.requires_grad = False
+        for param in nn.Sequential(*list(self.embedding.children())[:-1]).parameters():
+            param.requires_grad = False
 
         # LSTM LAyer
-        self.lstm = nn.GRU(embedding_dim, hidden_dim, n_layers,dropout=drop_prob, batch_first=True,bidirectional=True)
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim, n_layers,dropout=drop_prob, batch_first=True,bidirectional=True)
         
         # dropout layer
         self.dropout = nn.Dropout(0.3)
@@ -214,7 +214,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased' , do_lower_case=Tr
 #%%
 HIDDEN_DIM = 300
 EMB_DIM = 768
-BATCH_SIZE= 256
+BATCH_SIZE=16
 OUTPUT_DIM = 2
 N_LAYERS = 2
 BIDIRECTIONAL = True
