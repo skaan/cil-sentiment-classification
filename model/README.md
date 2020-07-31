@@ -1,36 +1,53 @@
+## Structure
+
+In this folder we keep multiple different models that we use for prototyping and classification. All models inherit from a base model that provides the interface for training, evaluation and prediction.
+
+```
+  .
+  ├── checkpoints/                  # artifactories from training
+  ├── base_model.py                 # base model that provides interface for all models
+  ├── BI_LSTM_BERT_BASE.py          # model with BILSTM layers and BERT embeddings
+  ├── cil_pretrainingwithBERT       # prototyping model with BERT and dense layers
+  ├── custom_callback.py            # callback that intercepts epochs and logs status
+  ├── rnn_model.py                  # model with BILSTM and glove in rnn setting
+  ├── saved_model.py                # wrapper model for loading saved models
+  ├── sep_cnn_model.py              # model with Separable convolutions and glove
+  └── README.md
+```
+
+## Framework
+
+For the models we used mainly [TensorFlow](https://www.tensorflow.org/api_docs/python/tf?version=nightly) and [PyTorch](https://pytorch.org/docs/stable/index.html). For the embedding we used [Glove](https://nlp.stanford.edu/projects/glove/) and [BERT](https://github.com/google-research/bert) as language models.
+
+## Interface
+
+All models implement the same base class and therefore can be used in a consistent way in the run scripts. The following base class with required functions is provided:
+
+```
+class BaseModel(ABC):
+
+  @abstractmethod
+  def build(self):
+    pass
+
+  @abstractmethod
+  def fit(self, input):
+    pass
+
+  @abstractmethod
+  def predict(self, input):
+    pass
+```
+
+ - `build()`: Build the model depending on provided parameters
+ - `fit()`: Train the model depending on runtime parameters
+ - `predict()`: Predict labels on input
+
 ## Models
 
-All models implement interface and can be called etc. and implement the following methods:
+The following models were implemented:
 
- - train
- - predict
- - pretrain: if not included in every model then say where this is included. "The training procedure as a whole is included in ... . This includes Pretraining, training, prediction and logging of val_acc".
- - load weights
- - ...
-
-The models implemented include the following:
-
- - ```SepCNN```: Very brief description, maybe just link to paper
- - ```BiLSTM with self attention``: Very brief description, maybe just link to paper
- - ```Stacked BiLSTM``: Very brief description, maybe just link to paper
- - ```Stacked GRU``: Very brief description, maybe just link to paper
-
-
-
-
-
-
-
-## TODO: change that into requirements.txt 
-Please install the following to use hashtag split and spelling correction in preprocessing.
-
-Make sure the Model is executed from model folder and the Bert Config file are also in the same folder.
-the File input is train_pos_full_prep.txt,train_neg_full_prep.txt,test_data.txt
-```
-pip install bert-for-tf2
-pip install tensorflow
-(tensorflow must be verion 2)
-pip install tqdm
-pip install pandas
-pip intall numpy
-```
+ - [SepCNN](https://arxiv.org/abs/1610.02357) 
+ - [BiLSTM with self attention](https://www.researchgate.net/publication/337748590_Self-Attention-Based_BiLSTM_Model_for_Short_Text_Fine-grained_Sentiment_Classification)
+ - Stacked BiLSTM
+ - Stacked GRU
