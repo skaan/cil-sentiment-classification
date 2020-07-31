@@ -23,7 +23,7 @@ output_test_path_noid = get_prep_path("test_prep_noid.txt")
 output_test_path = get_prep_path("test_prep.txt")
 
 def run_preprocessing(is_train=False, is_full=True):
-  preprocessing = PipelineMST()
+  preprocessing = PipelineMMST()
 
   if is_train and is_full:
     preprocessing.process(
