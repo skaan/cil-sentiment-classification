@@ -1,6 +1,6 @@
 #%%
 
-# importring libraries 
+# importring libraries
 import os
 from argparse import Namespace
 from collections import Counter
@@ -9,7 +9,7 @@ import re
 import string
 import numpy as np
 import pandas as pd
-import torch 
+import torch
 from tqdm import tqdm
 import torch.nn as nn
 import torch.nn.functional as F
@@ -21,27 +21,27 @@ from torch.utils.data import TensorDataset
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data.dataset import random_split
 from sklearn.model_selection import train_test_split
-import logging 
+import logging
 from transformers import BertTokenizer, BertModel
 
-#Create and configure logger 
-logging.basicConfig(filename="checkpoint_attention/BERT_BILSTM_attention.log", 
-                    format='%(asctime)s %(message)s', 
-                    filemode='w') 
+#Create and configure logger
+logging.basicConfig(filename="checkpoint_attention/BERT_BILSTM_attention.log",
+                    format='%(asctime)s %(message)s',
+                    filemode='w')
 
-#Creating an object 
-logger=logging.getLogger() 
-  
-#Setting the threshold of logger to DEBUG 
-logger.setLevel(logging.DEBUG) 
+#Creating an object
+logger=logging.getLogger()
 
-#tokenizer = torch.hub.load('huggingface/pytorch-transformers', 'tokenizer', 'bert-base-uncased' , do_lower_case=True) 
+#Setting the threshold of logger to DEBUG
+logger.setLevel(logging.DEBUG)
+
+#tokenizer = torch.hub.load('huggingface/pytorch-transformers', 'tokenizer', 'bert-base-uncased' , do_lower_case=True)
 
 # embedding = torch.hub.load('huggingface/pytorch-transformers', 'model', 'bert-base-uncased')
 #%%
 
 #%%
-## Data Loading 
+## Data Loading
 
 def load_directory_data(file):
   """Retrieves the Sentences from the input text file into a Dict,stores and return into Dataframe """
@@ -90,7 +90,7 @@ def fetch_and_load_datasets():
   test_df = load_dataset(os.getcwd(),False)
   os.chdir(oldpwd)
   return train_df,test_df
-  
+
 
 
 class SentimentRNN_WBERT(nn.Module):
@@ -109,8 +109,8 @@ class SentimentRNN_WBERT(nn.Module):
         self.hidden_dim = hidden_dim
         self.embedding_dim = embedding_dim
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased' , do_lower_case=True)
-        # embedding 
-        #       
+        # embedding
+        #
         self.embedding = BertModel.from_pretrained('bert-base-uncased')
 
         print('true')
@@ -119,17 +119,17 @@ class SentimentRNN_WBERT(nn.Module):
 
         # LSTM LAyer
         self.lstm = nn.LSTM(embedding_dim, hidden_dim, n_layers,dropout=drop_prob, batch_first=True,bidirectional=True)
-        
+
         # dropout layer
         self.dropout = nn.Dropout(0.3)
-        
+
         # linear and sigmoid layer
         self.decoder1 = nn.Linear(hidden_dim*2, hidden_dim)
         self.decoder2 = nn.Linear(hidden_dim,output_size)
         # self.hidden = self.init_hidden(batch_size)
 
         self.relu = nn.ReLU()
-    
+
     def preprocess_text(self,input):
         outputs,outputs_masks = [],[]
         for index,value in input.items():
@@ -159,13 +159,13 @@ class SentimentRNN_WBERT(nn.Module):
         embeds = self.embedding(input,masks)
 
 
-        #packed_embedded = nn.utils.rnn.pack_padded_sequence(embeds, sentence_length, batch_first=True) 
-        lstm_out, hidden = self.lstm(embeds[0], hidden)  
+        #packed_embedded = nn.utils.rnn.pack_padded_sequence(embeds, sentence_length, batch_first=True)
+        lstm_out, hidden = self.lstm(embeds[0], hidden)
 
 
         # lstm_fw = lstm_out[:, :, :self.hidden_dim]
         # lstm_bw = lstm_out[:, :, self.hidden_dim:]
-        
+
         #Fetching the hidden state of Backward and Forward
         lstm_out = torch.cat((hidden[0][-2, :, :], hidden[0][-1, :, :]), dim=1)
 
@@ -178,21 +178,21 @@ class SentimentRNN_WBERT(nn.Module):
         lstm_out = self.decoder2(lstm_out)
 
         return F.log_softmax(lstm_out,dim=1),hidden
- 
-    
+
+
     def init_hidden(self, batch_size):
         ''' Initializes hidden state '''
         # Create two new tensors with sizes n_layers x batch_size x hidden_dim,
         # initialized to zero, for hidden state and cell state of LSTM
         weight = next(self.parameters()).data
-        
+
         if(self.device):
           hidden = (weight.new(self.n_layers*2, batch_size, self.hidden_dim).zero_().cuda(),
                    weight.new(self.n_layers*2, batch_size, self.hidden_dim).zero_().cuda())
         else:
           hidden = (weight.new(self.n_layers*2, batch_size, self.hidden_dim).zero_(),
                    weight.new(self.n_layers*2, batch_size, self.hidden_dim).zero_())
-        
+
         return hidden
 
 
@@ -253,7 +253,7 @@ def count_parameters(model):
 
 count_parameters(model)
 
-def classDefiner_accuracy(x): 
+def classDefiner_accuracy(x):
     if x[0] > x[1]:
         return 0
     return 1
@@ -270,7 +270,7 @@ def accuracy(predicted,labels):
 
 
 #%%
-# Model training 
+# Model training
 
 epochs = 6
 clip=2 # gradient clipping
@@ -316,7 +316,7 @@ for e in range(2):
             loss.backward(retain_graph=True)
             running_loss += (loss.detach()  - running_loss) / (index + 1)
             index+=1
-            nn.utils.clip_grad_norm_(model.parameters(), clip)  
+            nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
             pretrain_bar.set_postfix(loss=running_loss, epoch=e)
 
@@ -364,7 +364,7 @@ for e in range(epochs):
             running_loss += (loss.detach()  - running_loss) / (index + 1)
             train_accuracy += (accuracy(predictions,labels) - train_accuracy) / (index + 1)
             index+=1
-            nn.utils.clip_grad_norm_(model.parameters(), clip)  
+            nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
             train_bar.set_postfix(loss=running_loss,acc=train_accuracy, epoch=e)
     # loss stats
@@ -387,7 +387,7 @@ for e in range(epochs):
             valid_hidden = tuple([each.data for each in valid_hidden])
 
             output,valid_hidden = model(inputs,valid_hidden)
-                    
+
             val_loss = loss_func(output, labels)
             running_val_loss += (val_loss.detach()  - running_val_loss) / (index + 1)
             val_accuracy += (accuracy(predictions,labels) - val_accuracy) / (index + 1)
@@ -396,11 +396,11 @@ for e in range(epochs):
             val_bar.set_postfix(loss=val_loss,acc=val_accuracy,epoch=e)
 
     # Optimizer Learning Rate
-    learningrate = optimizer.param_groups[0]['lr']   
+    learningrate = optimizer.param_groups[0]['lr']
 
-    #LearningRate Scheduler 
+    #LearningRate Scheduler
     my_lr_scheduler.step()
-        
+
     logger.info('train_loss '+str(running_loss)+'at epoch'+str(e+1))
     logger.info('Validation_loss '+str(running_val_loss)+'at epoch'+str(e+1))
     torch.save({
@@ -409,12 +409,12 @@ for e in range(epochs):
     'optimizer_state_dict': optimizer.state_dict(),
     'train_loss': running_loss,
     'val_loss': running_val_loss
-    }, 'checkpoint_attention/entire_model_BERT_BiLSTM'+str(e+1)+'.pt')  
+    }, 'checkpoint_attention/entire_model_BERT_BiLSTM'+str(e+1)+'.pt')
 
 model.eval()
 test_hidden = model.init_hidden(100)
 
-def classDefiner(x): 
+def classDefiner(x):
     if x[0] > x[1]:
         return -1
     return 1
@@ -439,6 +439,3 @@ PATH = "checkpoint_attention/entire_model_BERT_BILSTM_att.pt"
 torch.save(model, PATH)
 
 # %%
-
-
-
