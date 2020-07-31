@@ -12,6 +12,6 @@ class CustomCallback(keras.callbacks.Callback):
         print(
             "The average loss for epoch {} is {:7.2f} "
             "and mean absolute error is {:7.2f}.".format(
-                epoch, logs["loss"], logs["mean_absolute_error"]
+                epoch, logs["loss"], logs["mae"]
             )
         )

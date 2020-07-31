@@ -7,7 +7,7 @@ class BaseModel(ABC):
     pass
 
   @abstractmethod
-  def fit(self, input):
+  def fit(self, input, labels):
     pass
 
   @abstractmethod

@@ -27,10 +27,15 @@ def run_training():
 
   # pipeline
   num_features = min(len(word_index) + 1, TOP_K)
-  model.build(num_features)
+  embedding_matrix = embed.get_embedding_matrix(word_index, embedding_dim=200)
 
-  model.fit(input, labels)
-  model.save('saved_models/rnn_model')
+  model.build(num_features, input.shape, 
+              use_pretrained_embedding=True,
+              is_embedding_trainable=False,
+              embedding_matrix=embedding_matrix)
+
+  model.fit(input, labels, epochs=10)
+  model.save(f'saved_models/{type(model).__name__}')
 
 # Predict
 if __name__ == '__main__':
