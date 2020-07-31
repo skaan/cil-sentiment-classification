@@ -6,10 +6,12 @@ In this folder we keep multiple different models that we use for prototyping and
   .
   ├── checkpoints/                  # artifactories from training
   ├── base_model.py                 # base model that provides interface for all models
-  ├── BI_LSTM_BERT_BASE.py          # model with BILSTM layers and BERT embeddings
+  ├── bigru_model_pytorch.py        # model with BiGRU layers and Glove/BERT embeddings
+  ├── bilstm_model_pytorch.py       # model with BiLSTM layers and Glove/BERT embeddings
   ├── cil_pretrainingwithBERT       # prototyping model with BERT and dense layers
   ├── custom_callback.py            # callback that intercepts epochs and logs status
   ├── rnn_model.py                  # model with BILSTM and glove in rnn setting
+  ├── san_model_pytorch.py          # model with BILSTM and self attention Glove/BERT
   ├── saved_model.py                # wrapper model for loading saved models
   ├── sep_cnn_model.py              # model with Separable convolutions and glove
   └── README.md

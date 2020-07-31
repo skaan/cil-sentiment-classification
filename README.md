@@ -26,13 +26,14 @@ We divided the project into multiple folders corresponding to steps in the whole
 
 ```
   .
-  ├── data/                  # raw/processed datasets and data loaders
-  ├── embed/                 # vocabularies and embeddings/vectorizers
-  ├── model/                 # models and interceptors for training
-  ├── preprocessing/         # pipelines and helpers for preprocessing data
-  ├── run_preprocessing.py   # script for executing preprocessing on data
-  ├── run_training.py        # script for training model
-  ├── run_predict.py         # script for loading saved models and predicting on test data
+  ├── data/                   # raw/processed datasets and data loaders
+  ├── embed/                  # vocabularies and embeddings/vectorizers
+  ├── model/                  # models and interceptors for training
+  ├── preprocessing/          # pipelines and helpers for preprocessing data
+  ├── run_predict.py          # script for loading saved models and predicting on test data
+  ├── run_preprocessing.py    # script for executing preprocessing on data
+  ├── run_training.py         # script for training model with TensorFlow
+  ├── run_training_pytorch.py # script for training model with PyTorch
   └── README.md
 ```
 
