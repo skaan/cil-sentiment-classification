@@ -49,6 +49,12 @@ The training script loads the training data and a specific model from the `/mode
 
 See [Model](../model/README.md) for more information
 
+### Script `run_training_pytorch.py`
+
+The training script loads the training data and a specific model from the `/model` directory with the PyTorch framework. All models inherit the same base class to provide a consistent experience for this script.
+
+See [Model](../model/README.md) for more information
+
 ### Script `run_predict.py`
 
 This script loads the saved models from the training and predicts classification responses from test data.
