@@ -48,6 +48,6 @@ class BaseModel(ABC):
 The following models were implemented:
 
  - [SepCNN](https://arxiv.org/abs/1610.02357) 
- - [BiLSTM with self attention](https://www.researchgate.net/publication/337748590_Self-Attention-Based_BiLSTM_Model_for_Short_Text_Fine-grained_Sentiment_Classification)
- - Stacked BiLSTM
- - Stacked GRU
+ - [BiLSTM with self attention](https://www.aclweb.org/anthology/P16-2034.pdf)
+ - [GRU with self attention](https://arxiv.org/pdf/2002.00735.pdf)
+ - [BiLSTM](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
