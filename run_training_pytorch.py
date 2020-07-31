@@ -27,7 +27,7 @@ args = parser.parse_args()
 
 def run_training():
 
-  train_df , test_df = data.fetch_and_load_datasets('mst_first')
+  train_df , test_df = data.fetch_and_load_datasets('pipeline_mmst')
 
   train_df, val_df = train_test_split(train_df, shuffle=True, train_size=1-args.val_split, test_size=args.val_split, random_state=42)
 
