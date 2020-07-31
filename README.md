@@ -20,21 +20,44 @@ pipenv shell
 pipenv install
 ```
 
-
 ## Structure
-run_predict.py
-run_train.py
-etc.
 
-## Prerequisites
+We divided the project into multiple folders corresponding to steps in the whole ml pipeline:
 
-#### Pip dependencies
-requirements_dev.txt
-requirements_prod.txt
+```
+  .
+  ├── data/                  # raw/processed datasets and data loaders
+  ├── embed/                 # vocabularies and embeddings/vectorizers
+  ├── model/                 # models and interceptors for training
+  ├── preprocessing/         # pipelines and helpers for preprocessing data
+  ├── run_preprocessing.py   # script for executing preprocessing on data
+  ├── run_training.py        # script for training model
+  ├── run_predict.py         # script for loading saved models and predicting on test data
+  └── README.md
+```
 
-#### Preprocessed data sets
+### Script `run_preprocessing.py`
+
+The preprocessing script is a playground where you can build up a complete preprocessing pipeline with the helper functions from the `/preprocessing` directory. All transformers follow the same interface, which simplifies chaining preprocessing steps.
+
+See [Preproccessing](../preprocessing/README.md) for more information
+
+### Script `run_training.py`
+
+The training script loads the training data and a specific model from the `/model` directory. All models inherit the same base class to provide a consistent experience for this script. The models need to implement `build` and `fit` functions that take similar base parameters.
+
+See [Model](../model/README.md) for more information
+
+### Script `run_predict.py`
+
+This script loads the saved models from the training and predicts classification responses from test data.
+
+## Datasets
 For convinience, we provide links to the already processed data sets as downloadable zip folders.
 etc.
 
-#### Frameworks used
-CUDA pytorch and tf version.
+## Authors
+
+This project was a collaboration for the Computational Intelligence Lab FS2020 at ETH Zurich from the following members:
+
+Ferdinand Kossmann, Philippe Mösch, Saiteja Reddy Pottanigari, Kaan Sentürk
