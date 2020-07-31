@@ -41,7 +41,7 @@ class EmoticonReplace(PreprocessingInterface):
         replaced = 0
         not_rec = 0
 
-        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+        regex = re.compile("[@_!#$%^&*()<>?/\|}{~:];'")
         output = open(self.output, 'w+')
         with open(self.input, mode='r') as input:
                 for line in input:

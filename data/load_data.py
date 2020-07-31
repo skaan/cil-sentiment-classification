@@ -5,7 +5,7 @@ from tqdm import tqdm
 import pandas as pd
 
 file_path = os.path.dirname(os.path.abspath(__file__))
-get_prep_path = lambda file: os.path.join(file_path, f"./mst/{file}")
+get_prep_path = lambda file: os.path.join(file_path, f"./pipeline_mmst/{file}")
 
 def load_train_data(seed = 0):
   # Gather data

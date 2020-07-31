@@ -12,7 +12,7 @@ class SpellingCorrectionTextBlob(PreprocessingInterface):
     lines the file has, print prog is after how many percent points of progress,
     the progress should be printed.
     '''
-    def __init__(self, file_len=1000000, print_prog=5, dict_path='slang_dict.json', conf=0.51):
+    def __init__(self, file_len=1000000, print_prog=5, dict_path='dicts/slang_dict.json', conf=0.51):
         self.file_len = 1000000
         self.print_prog=5
 
@@ -124,22 +124,36 @@ class SpellingCorrectionTextBlob(PreprocessingInterface):
 
         # TODO
 
+        self.en_dict = enchant.Dict("en_US")
+        with open(self.dict_path,'r', encoding='utf8') as file:
+            self.slang_dict = json.loads(file.read())
+
         # correct
         output = open(self.output, 'w+')
+        i = 0
         with open(self.input, mode='r', encoding='utf8') as input:
             for line in input:
                 for word in line.split():
-                    if not self.is_word(word):
+                    if not self.is_word(word) and len(word) > 1 and word[0] != "#" and not word in ["i'm", "im"]:
                         blob = TextBlob(word)
-                        sug = blob.words[0].spellcheck()[0]
+                        if len(blob.words) > 0:
+                            sugs = blob.words[0].spellcheck()
+                            if len(sugs) > 0:
+                                word = blob.words[0].spellcheck()[0][0]
+
+                        '''
                         conf = sug[1]
                         #print(str(conf) + ' ' + sug[0])
                         print(sug)
                         print()
                         if conf > self.conf:
                             word = sug[0]
+                        '''
 
                     output.write(word + ' ')
                 output.write('\n')
+                if i % 100000 == 0:
+                    print("  {}".format(i))
+                i += 1
 
         output.close()

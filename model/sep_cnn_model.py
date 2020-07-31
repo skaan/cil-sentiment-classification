@@ -114,7 +114,6 @@ class SepCNNModel(BaseModel):
       verbose=2, 
     )
 
-
   def predict(self, prediction_data):
     predictions = self.model.predict(prediction_data)
     return predictions
