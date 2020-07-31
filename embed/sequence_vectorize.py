@@ -2,7 +2,7 @@ from tensorflow.python.keras.preprocessing import sequence
 from tensorflow.python.keras.preprocessing import text
 
 # TODO: Early tweets only have 140 charachters?
-MAX_SEQUENCE_LENGTH = 280
+MAX_SEQUENCE_LENGTH = 140
 TOP_K = 20000
 
 def sequence_vectorize(texts):
@@ -17,7 +17,7 @@ def sequence_vectorize(texts):
     tokenizer = text.Tokenizer(num_words=TOP_K)
     tokenizer.fit_on_texts(texts)
 
-    # Vectorize training and validation texts.
+    # Vectorize text.
     vectors = tokenizer.texts_to_sequences(texts)
 
     # Get max sequence length.
@@ -25,7 +25,7 @@ def sequence_vectorize(texts):
     if max_length > MAX_SEQUENCE_LENGTH:
         max_length = MAX_SEQUENCE_LENGTH
 
-    # Padding
+    # Add padding to sequences.
     padded_vectors = sequence.pad_sequences(vectors, maxlen=max_length)
 
     return padded_vectors, tokenizer.word_index

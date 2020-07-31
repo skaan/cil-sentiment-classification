@@ -4,7 +4,7 @@ import sys
 import random
 
 file_path = os.path.dirname(os.path.abspath(__file__))
-get_prep_path = lambda file: os.path.join(file_path, f"./mst_first/{file}")
+get_prep_path = lambda file: os.path.join(file_path, f"./mst/{file}")
 
 def load_train_data(seed = 0):
   # Gather data
