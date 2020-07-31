@@ -21,7 +21,7 @@ class SlangReplace(PreprocessingInterface):
         slang_dict = d.get_slang()
 
         # replace slang words
-        corr_word_rep = ['dunno']
+        corr_word_rep = ['dunno', 'gonna', 'rt']
 
         output = open(self.output, 'w+')
         with open(self.input, mode='r') as input:

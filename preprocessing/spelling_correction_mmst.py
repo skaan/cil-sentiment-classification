@@ -10,11 +10,11 @@ from math import floor
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(file_path, '../embed'))
-from mst import MMST
+from mmst import MMST
 from embeddings import Loader
 
 
-class SpellingCorrectionMST(PreprocessingInterface):
+class SpellingCorrectionMMST(PreprocessingInterface):
 
     def __init__(self):
         self.nb = 0
@@ -53,10 +53,28 @@ class SpellingCorrectionMST(PreprocessingInterface):
 
 
     def checker(self, id, d, slang_dict, stop_words, emoji_dict):
+        first = True
         g = MMST(d, slang_dict, stop_words, emoji_dict)
         input = open(self.input + '_' + str(id), "r")
-        with open(self.output + '_' + str(id), "w+") as f:
+        '''
+        output_r = open(self.output + '_' + str(id), "r+")
+        already_written = 0
+        for line in output_r:
+            already_written += 1
+        output_r.close()
+        '''
+
+        prog = 0
+        with open(self.output + '_' + str(id), "a+") as f:
             for line in input:
+                '''
+                prog += 1
+                if prog <= already_written:
+                    continue
+                '''
+                if first:
+                    print(line)
+                    first = False
                 try:
                     tmp = g.input_sentence(line, self.load, verbose=False)
                     f.write(tmp)
@@ -81,17 +99,10 @@ class SpellingCorrectionMST(PreprocessingInterface):
 
         for t in ts:
             t.start()
+
         for t in ts:
             t.join()
 
+        print("merging")
+
         self.merge_outputs()
-
-
-
-'''
-sc = SpellingCorrectionMST()
-sc.input = "../data/mst_first/train_pos_mst_3.txt"
-sc.output = "../data/mst_first/train_pos.txt"
-
-sc.merge_outputs()
-'''

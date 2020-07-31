@@ -1,6 +1,6 @@
 from preprocessing_interface import PreprocessingInterface
 
-class ApposRemove(PreprocessingInterface):
+class Contract(PreprocessingInterface):
 
     '''
     dict from https://www.quora.com/Which-NLP-Tools-can-I-use-to-convert-sentences-like-Hes-rich-to-He-is-rich
@@ -103,7 +103,7 @@ class ApposRemove(PreprocessingInterface):
                         "needn't": "need not"
                     }
 
-        additional_dict = contraction_mapping = {"ain't": "is not", "aren't": "are not","can't": "cannot", "'cause": "because", "could've": "could have", "couldn't": "could not","didn't": "did not", "doesn't": "does not", "don't": "do not", "hadn't": "had not", "hasn't": "has not", "haven't": "have not",
+        additional_dict = {"ain't": "is not", "aren't": "are not","can't": "cannot", "'cause": "because", "could've": "could have", "couldn't": "could not","didn't": "did not", "doesn't": "does not", "don't": "do not", "hadn't": "had not", "hasn't": "has not", "haven't": "have not",
 
                            "he'd": "he would","he'll": "he will", "he's": "he is", "how'd": "how did", "how'd'y": "how do you", "how'll": "how will", "how's": "how is",
 
@@ -151,6 +151,9 @@ class ApposRemove(PreprocessingInterface):
 
         for appo in list(self.dict):
             self.dict[appo.replace("'", "")] = self.dict[appo]
+
+        self.dict.pop('ill', None)
+        self.dict.pop('its', None)
 
 
     def print_dict(self):

@@ -1,6 +1,6 @@
 from preprocessing_interface import PreprocessingInterface
 
-class RemoveRedundant(PreprocessingInterface):
+class RemoveDuplicate(PreprocessingInterface):
 
     def run(self):
         super().run();
