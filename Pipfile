@@ -16,6 +16,10 @@ pyenchant = "*"
 wordsegment = "*"
 urllib3 = "*"
 beautifulsoup4 = "*"
+pandas = "*"
+matplotlib = "*"
+bert-for-tf2 = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.8"
