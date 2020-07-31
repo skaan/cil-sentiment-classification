@@ -29,7 +29,7 @@ def run_training():
   num_features = min(len(word_index) + 1, TOP_K)
   model.build(num_features)
 
-  model.fit(input[:1000], labels[:10])
+  model.fit(input, labels)
   model.save('saved_models/rnn_model')
 
 # Predict

@@ -83,12 +83,11 @@ class SepCNNModel(BaseModel):
       input,
       labels,
       epochs=epochs,
-      batch_size=batch_size
+      batch_size=batch_size,
       validation_split=0.1,
       callbacks=[CustomCallback()],
       verbose=2, 
     )
-
 
   def predict(self, prediction_data):
     predictions = self.model.predict(prediction_data)
