@@ -1,23 +1,16 @@
 '''
 Pipeline:
-1. remove duplicate
-2. Space clean
+1. Remove duplicate
+2. Remove tags
+3. Space clean
+4. If test: removeId
 '''
-
 import os
-import sys
 
 from clean_spaces import CleanSpaces
-from remove_redundant import RemoveRedundant
-from remove_id import RemoveId
+from remove_duplicate import RemoveDuplicate
 from tag_remove import TagRemove
-from normalize import Normalize
-
-from appos_remove import ApposRemove
-
-
-from dict import Dict
-
+from remove_id import RemoveId
 
 class PipelineClean:
 
@@ -29,46 +22,55 @@ class PipelineClean:
     '''
     def process(self, input_paths, output_paths):
         # Init steps
-        #rd = RemoveRedundant()
+        rd = RemoveDuplicate()
+        tr = TagRemove()
         cs = CleanSpaces()
-        ap = ApposRemove()
+        ri = RemoveId()
 
         # execute pipeline
         for input_path, output_path in zip(input_paths, output_paths):
-
             # data paths
             path_0 = input_path
             path_1 = output_path[:-4] + '_1' + output_path[-4:]
             path_2 = output_path[:-4] + '_2' + output_path[-4:]
-            path_3 = output_path
-
+            path_3 = output_path[:-4] + '_3' + output_path[-4:]
+            path_4 = output_path
 
             # set paths
-            cs.set_paths(path_0, path_1)
-            ap.set_paths(path_1, output_path)
+            rd.set_paths(path_0, path_1)
+            tr.set_paths(path_1, path_2)
+            if input_path[-8:] == 'test.txt':
+                cs.set_paths(path_2, path_3)
+                ri.set_paths(path_3, path_4)
+            else:
+                cs.set_paths(path_2, path_4)
 
             # run
             print("starting with " + os.path.basename(input_path))
+            rd.run()
+            print(os.path.basename(input_path) + ": remove duplicates done.")
+            tr.run()
+            print(os.path.basename(input_path) + ": remove tags done.")
             cs.run()
-            print(os.path.basename(input_path) + ": tag remove done.")
-            ap.run()
-            print(os.path.basename(input_path) + ": red rem done.")
-            #cs.run()
-            #print(os.path.basename(input_path) + ": clean space done.")
-            #tr.run()
+            print(os.path.basename(input_path) + ": clean spaces done.")
+            if input_path[-8:] == 'test.txt':
+                ri.run()
+                print(os.path.basename(input_path) + ": remove id done.")
+
 
 # driver code
 if __name__ == '__main__':
     pclean = PipelineClean()
     file_path = os.path.dirname(os.path.abspath(__file__))
-    data_folder = os.path.join(file_path, '../data/mst_first')
 
-    inp_neg = os.path.join(data_folder, 'train_neg.txt')
-    inp_pos = os.path.join(data_folder, 'train_pos.txt')
-    inp_test = os.path.join(data_folder, 'test.txt')
+    inp_dir = os.path.join(file_path, '../data/cleaned')
+    inp_neg = os.path.join(inp_dir, 'train_neg_full.txt')
+    inp_pos = os.path.join(inp_dir, 'train_pos_full.txt')
+    inp_test = os.path.join(inp_dir, 'test_data.txt')
 
-    out_neg = os.path.join(data_folder, '../mst_first/ttrain_neg.txt')
-    out_pos = os.path.join(data_folder, '../mst_first/ttrain_pos.txt')
-    out_test = os.path.join(data_folder, '../mst_first/ttest.txt')
+    out_dir = os.path.join(file_path, '../data/cleaned')
+    out_neg = os.path.join(out_dir, 'train_neg.txt')
+    out_pos = os.path.join(out_dir, 'train_pos.txt')
+    out_test = os.path.join(out_dir, 'test.txt')
 
-    pclean.process([inp_neg, inp_pos, inp_test], [out_neg, inp_pos, out_test])
+    pclean.process([inp_neg, inp_pos, inp_test], [out_neg, out_pos, out_test])
