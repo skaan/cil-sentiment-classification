@@ -5,7 +5,7 @@ Hashtag split based on word weighing algorithm.
 from preprocessing_interface import PreprocessingInterface
 from wordsegment import load, segment
 
-class HashtagSplitWW(PreprocessingInterface):
+class HashtagSplit(PreprocessingInterface):
 
     def run(self):
         super().run();
